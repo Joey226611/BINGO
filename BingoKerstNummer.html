@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kerst Bingo 🎄</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(130deg, #145214, #1e1e1e, #8b0000);
+    background-size: 400% 400%;
+    animation: bgMove 12s infinite alternate;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+}
+
+@keyframes bgMove {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+/* Christmas Glow Sparkles */
+.sparkle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: gold;
+    border-radius: 50%;
+    animation: sparkleAnim 3s infinite ease-in-out;
+    opacity: 0;
+}
+@keyframes sparkleAnim {
+    0% { opacity: 0; transform: scale(0.2); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(0.1); }
+}
+
+/* UI */
+#settings {
+    margin-top: 40px;
+    background: rgba(255,255,255,0.15);
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    width: 85%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.sliderValue {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+button {
+    margin-top: 20px;
+    font-size: 24px;
+    padding: 12px 30px;
+    border-radius: 20px;
+    background: #ff0000;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: .3s;
+}
+button:hover {
+    transform: scale(1.1);
+    background: #ff3b3b;
+}
+.modeBtn {
+    width: 90%;
+    font-size: 20px;
+}
+
+/* BALL */
+#ball {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    transform: translate(-50%, -50%) scale(0);
+    background: radial-gradient(circle, white 55%, #cfcfcf 90%);
+    border: 7px solid #ff0000;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4);
+    transition: .4s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#numberText {
+    font-size: 85px;
+    font-weight: bold;
+    color: #000;
+}
+
+#nextNumber {
+    display: none;
+    margin-top: 50px;
+    font-size: 26px;
+}
+</style>
+</head>
+<body>
+
+<h1>🎅 Kerst Muziek Bingo 🎄</h1>
+
+<div id="settings">
+    <label>Nummer limiet: <span id="rangeValue" class="sliderValue">75</span></label>
+    <input type="range" min="10" max="100" value="75" id="numberRange">
+
+    <h3>Gamemode:</h3>
+    <button class="modeBtn" id="kidMode">👶 Kid Mode</button>
+    <button class="modeBtn" id="aiMode">🤖 AI Mode</button>
+    <button class="modeBtn" id="proMode">🔥 Pro Mode</button>
+
+    <br><br>
+
+    <label>
+        Text-To-Speech:
+        <input type="checkbox" id="ttsToggle">
+    </label>
+
+    <label>
+        Stem Selecteren:
+        <select id="voiceSelect"></select>
+    </label>
+
+    <button id="startGame">Start Spel 🎄</button>
+</div>
+
+<div id="ball">
+    <span id="numberText"></span>
+</div>
+
+<button id="nextNumber">Volgende Nummer ➡️</button>
+
+<script>
+/* 🎄 Sparkle generator */
+function spawnSparkle() {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.top = Math.random() * 100 + "vh";
+    s.style.animationDuration = (Math.random()*3+2) + "s";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),4000);
+}
+setInterval(spawnSparkle, 500);
+
+
+/* --- VARIABLES --- */
+let usedNumbers = JSON.parse(localStorage.getItem("usedNumbers")) || [];
+let voices = [];
+let mode = localStorage.getItem("mode") || "pro";
+let ttsEnabled = localStorage.getItem("tts") === "true";
+let maxNumber = Number(localStorage.getItem("max")) || 75;
+let cooldownActive = false;
+let aiInterval = null;
+
+
+/* DOM elements */
+const synth = window.speechSynthesis;
+const ttsToggle = document.getElementById("ttsToggle");
+const voiceSelect = document.getElementById("voiceSelect");
+const rangeValue = document.getElementById("rangeValue");
+const ball = document.getElementById("ball");
+const numberText = document.getElementById("numberText");
+const nextBtn = document.getElementById("nextNumber");
+const numberRange = document.getElementById("numberRange");
+const settingsMenu = document.getElementById("settings");
+
+
+/* Restore UI values */
+numberRange.value = maxNumber;
+rangeValue.textContent = maxNumber;
+ttsToggle.checked = ttsEnabled;
+
+
+/* Load voices */
+function loadVoices() {
+    voices = synth.getVoices();
+    voiceSelect.innerHTML = "";
+
+    voices.forEach((voice, i) => {
+        let opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = voice.name;
+        voiceSelect.appendChild(opt);
+    });
+
+    if(localStorage.getItem("voiceIndex")){
+        voiceSelect.value = localStorage.getItem("voiceIndex");
+    }
+}
+loadVoices();
+speechSynthesis.onvoiceschanged = loadVoices;
+
+
+/* Events */
+
+numberRange.oninput = () => {
+    rangeValue.textContent = numberRange.value;
+    maxNumber = numberRange.value;
+    localStorage.setItem("max", maxNumber);
+};
+
+ttsToggle.addEventListener("change", () => {
+    ttsEnabled = ttsToggle.checked;
+    localStorage.setItem("tts", ttsEnabled);
+});
+
+voiceSelect.addEventListener("change", () => {
+    localStorage.setItem("voiceIndex", voiceSelect.value);
+});
+
+
+document.getElementById("kidMode").onclick = () => { mode="kid"; localStorage.setItem("mode",mode); };
+document.getElementById("aiMode").onclick = () => { mode="ai"; localStorage.setItem("mode",mode); };
+document.getElementById("proMode").onclick = () => { mode="pro"; localStorage.setItem("mode",mode); };
+
+
+document.getElementById("startGame").addEventListener("click", () => {
+    settingsMenu.remove();
+    nextBtn.style.display = "block";
+
+    if (mode === "ai") {
+        aiInterval = setInterval(generateNumber, 10000);
+    }
+});
+
+
+nextBtn.addEventListener("click", () => {
+    if (mode === "kid" && cooldownActive) return;
+    generateNumber();
+
+    if (mode === "kid") {
+        cooldownActive = true;
+        nextBtn.style.opacity = 0.4;
+        setTimeout(() => {
+            cooldownActive = false;
+            nextBtn.style.opacity = 1;
+        }, 10000);
+    }
+});
+
+
+/* MAIN NUMBER FUNCTION */
+function generateNumber() {
+    if (usedNumbers.length >= maxNumber) {
+        alert("Alle nummers zijn geweest 🎉");
+        return;
+    }
+
+    let num;
+    do { num = Math.floor(Math.random() * maxNumber) + 1; }
+    while (usedNumbers.includes(num));
+
+    usedNumbers.push(num);
+    localStorage.setItem("usedNumbers", JSON.stringify(usedNumbers));
+
+    numberText.textContent = num;
+    ball.style.transform = "translate(-50%, -50%) scale(1)";
+
+    if (ttsEnabled) speakNumber(num);
+    else setTimeout(hideBall, 8000);
+}
+
+
+/* SPEECH */
+function speakNumber(num) {
+    const msg = new SpeechSynthesisUtterance(`De volgende nummer is ${num}. Ik herhaal ${num}.`);
+    msg.voice = voices[voiceSelect.value];
+    msg.onend = hideBall;
+    synth.speak(msg);
+}
+
+
+/* HIDE ANIMATION */
+function hideBall() {
+    ball.style.transform = "translate(-50%, -50%) scale(0)";
+}
+</script>
+</body>
+</html>
