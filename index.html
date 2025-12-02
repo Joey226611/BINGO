@@ -1,292 +1,528 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kerst Bingo 🎄</title>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Kerst Nummer Bingo — Deluxe (TTS Fix)</title>
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(130deg, #145214, #1e1e1e, #8b0000);
-    background-size: 400% 400%;
-    animation: bgMove 12s infinite alternate;
-    color: white;
-    text-align: center;
-    overflow: hidden;
-}
+  :root{
+    --bg1:#071226; --bg2:#092b18; --accent:#e11d48; --accent2:#10b981;
+    --card: rgba(255,255,255,0.04);
+    --muted: #9fb0c8;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,system-ui,Arial; background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#e6eef8; -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  header{padding:18px 24px; display:flex;align-items:center;gap:12px}
+  h1{margin:0;font-size:20px}
+  .app{max-width:1150px;margin:18px auto;padding:12px;display:grid;grid-template-columns:1fr 380px;gap:18px}
+  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,0.6)}
+  .sidebar .card{background:var(--card);padding:12px;border-radius:12px;margin-bottom:12px;}
+  .title{font-weight:800;font-size:18px}
+  .subtitle{color:var(--muted);font-size:13px}
 
-@keyframes bgMove {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100% 100%; }
-}
+  /* Ball / stage */
+  .stage{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .ball-wrap{width:360px;height:360px;display:flex;align-items:center;justify-content:center;perspective:1200px}
+  .ball{
+    width:260px;height:260px;border-radius:50%;
+    background: radial-gradient(circle at 30% 20%, #fff 8%, #f6f6f6 18%, #ffffff 22%), linear-gradient(180deg,#fff,#f0f0f0);
+    box-shadow: 0 30px 60px rgba(2,6,23,0.6), inset 0 -8px 18px rgba(0,0,0,0.08), 0 8px 30px rgba(0,0,0,0.5);
+    border:10px solid rgba(0,0,0,0.06); display:flex;align-items:center;justify-content:center;
+    transform-style:preserve-3d; transition: transform 700ms cubic-bezier(.2,.9,.2,1), opacity .35s;
+  }
+  .ball.spin{ transform: rotateX(30deg) rotateY(540deg) scale(1.03); }
+  .ball-hidden{ opacity:0; transform: scale(0.8); pointer-events:none; }
+  .ball-inner{ width:84%; height:84%; border-radius:50%; display:flex; align-items:center; justify-content:center;
+              background: radial-gradient(circle at 40% 30%, rgba(0,0,0,0.06), transparent 20%),
+                          linear-gradient(180deg, rgba(225,29,72,0.12), rgba(16,185,129,0.06));
+              color:#071226; font-weight:900; font-size:110px; -webkit-text-stroke:1px rgba(0,0,0,0.06)}
+  .controls{flex:1;min-width:260px;display:flex;flex-direction:column;gap:10px}
+  button{cursor:pointer;border:0;padding:10px 14px;border-radius:10px;font-weight:800}
+  .btn-primary{background:linear-gradient(180deg,var(--accent),#b21a3a);color:white;box-shadow:0 6px 18px rgba(225,29,72,0.18)}
+  .btn-green{background:linear-gradient(180deg,var(--accent2),#059669);color:white}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .mode-row{display:flex;gap:8px;flex-wrap:wrap}
+  .mode-row button{flex:1;padding:10px;border-radius:10px}
 
-/* Christmas Glow Sparkles */
-.sparkle {
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    background: gold;
-    border-radius: 50%;
-    animation: sparkleAnim 3s infinite ease-in-out;
-    opacity: 0;
-}
-@keyframes sparkleAnim {
-    0% { opacity: 0; transform: scale(0.2); }
-    50% { opacity: 1; transform: scale(1.2); }
-    100% { opacity: 0; transform: scale(0.1); }
-}
+  /* Sidebar */
+  .small{font-size:13px;color:var(--muted)}
+  .slider-row{display:flex;gap:12px;align-items:center}
+  input[type=range]{width:100%}
+  .stats{display:flex;gap:10px;margin-top:8px}
+  .stat{flex:1;background:rgba(255,255,255,0.03);padding:8px;border-radius:10px;text-align:center}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;margin:6px;background:rgba(255,255,255,0.04);font-weight:700}
 
-/* UI */
-#settings {
-    margin-top: 40px;
-    background: rgba(255,255,255,0.15);
-    padding: 20px;
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    width: 85%;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0 0 20px rgba(255,255,255,0.3);
-}
+  .list{max-height:220px;overflow:auto;padding:8px;margin-top:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:8px;}
 
-.sliderValue {
-    font-size: 22px;
-    font-weight: bold;
-}
+  footer.credits{font-size:12px;color:var(--muted);margin-top:8px}
 
-button {
-    margin-top: 20px;
-    font-size: 24px;
-    padding: 12px 30px;
-    border-radius: 20px;
-    background: #ff0000;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: .3s;
-}
-button:hover {
-    transform: scale(1.1);
-    background: #ff3b3b;
-}
-.modeBtn {
-    width: 90%;
-    font-size: 20px;
-}
+  /* Victory overlay */
+  #victory{
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;
+    background: linear-gradient(180deg, rgba(255,241,118,0.95), rgba(255,205,0,0.98));
+    color:#1b1b1b;flex-direction:column;text-align:center;padding:20px;
+  }
+  #victory h2{font-size:46px;margin:0 0 8px}
+  #victory p{font-size:22px;margin:0 0 16px}
+  .glitter{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 
-/* BALL */
-#ball {
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    width: 200px;
-    height: 200px;
-    transform: translate(-50%, -50%) scale(0);
-    background: radial-gradient(circle, white 55%, #cfcfcf 90%);
-    border: 7px solid #ff0000;
-    border-radius: 50%;
-    box-shadow: 0 0 20px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4);
-    transition: .4s ease-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#numberText {
-    font-size: 85px;
-    font-weight: bold;
-    color: #000;
-}
-
-#nextNumber {
-    display: none;
-    margin-top: 50px;
-    font-size: 26px;
-}
+  /* small responsive */
+  @media (max-width:980px){
+    .app{grid-template-columns:1fr; padding:14px}
+    .ball-wrap{width:220px;height:220px}
+    .ball-inner{font-size:72px}
+  }
 </style>
 </head>
 <body>
+  <header>
+    <div>
+      <div class="title">Kerst Nummer Bingo 🎄 — Deluxe</div>
+      <div class="subtitle small">TTS fix: betrouwbare stemmen + opgeslagen keuze.</div>
+    </div>
+  </header>
 
-<h1>🎅 Kerst Muziek Bingo 🎄</h1>
+  <main class="app">
+    <section class="panel">
+      <div class="stage">
+        <div class="ball-wrap" aria-live="polite">
+          <div id="ball" class="ball ball-hidden" role="status" aria-atomic="true">
+            <div id="ballInner" class="ball-inner">—</div>
+          </div>
+        </div>
 
-<div id="settings">
-    <label>Nummer limiet: <span id="rangeValue" class="sliderValue">75</span></label>
-    <input type="range" min="10" max="100" value="75" id="numberRange">
+        <div class="controls">
+          <div style="display:flex;gap:8px;">
+            <button id="nextBtn" class="btn-ghost" style="flex:1">Volgende nummer</button>
+            <button id="settingsToggle" class="btn-ghost">Instellingen</button>
+          </div>
 
-    <h3>Gamemode:</h3>
-    <button class="modeBtn" id="kidMode">👶 Kid Mode</button>
-    <button class="modeBtn" id="aiMode">🤖 AI Mode</button>
-    <button class="modeBtn" id="proMode">🔥 Pro Mode</button>
+          <div class="mode-row" style="margin-top:8px">
+            <button id="kidBtn" class="btn-ghost" aria-pressed="false">Kid Mode</button>
+            <button id="aiBtn" class="btn-ghost" aria-pressed="false">AI Mode</button>
+            <button id="profBtn" class="btn-ghost" aria-pressed="false">Prof Mode</button>
+          </div>
 
-    <br><br>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="startAI" class="btn-green" style="display:none">Start AI</button>
+            <button id="stopAI" class="btn-ghost" style="display:none">Stop AI</button>
+          </div>
 
-    <label>
-        Text-To-Speech:
-        <input type="checkbox" id="ttsToggle">
-    </label>
+          <button id="bingoBtn" class="btn-primary" style="margin-top:12px;background:linear-gradient(180deg,#ffd400,#ffb300);color:#111">BINGO!!!</button>
 
-    <label>
-        Stem Selecteren:
-        <select id="voiceSelect"></select>
-    </label>
+          <div style="margin-top:10px">
+            <button id="resetBtn" class="btn-ghost">Reset spel</button>
+          </div>
 
-    <button id="startGame">Start Spel 🎄</button>
-</div>
+          <div style="margin-top:12px" class="small">Laatste geroepen nummers:</div>
+          <div id="lastCalled" class="list" aria-live="polite"></div>
+        </div>
+      </div>
 
-<div id="ball">
-    <span id="numberText"></span>
-</div>
+      <footer class="credits">TTS: Web Speech API — Als TTS aan staat verdwijnt de bal nadat de stem klaar is. Als uit: na 8s.</footer>
+    </section>
 
-<button id="nextNumber">Volgende Nummer ➡️</button>
+    <aside class="sidebar">
+      <div class="card">
+        <div class="small">Instellingen</div>
+        <div style="margin-top:8px">
+          <label class="small">Max nummer: <strong id="maxLabel">75</strong></label>
+          <div class="slider-row">
+            <input id="maxNumber" type="range" min="10" max="100" step="1" value="75" />
+          </div>
+
+          <div style="margin-top:8px">
+            <div class="small">Text-to-Speech</div>
+            <label style="display:flex;align-items:center;gap:8px;margin-top:6px">
+              <input id="ttsToggle" type="checkbox" /> <span class="small">TTS aan</span>
+            </label>
+
+            <label class="small" style="margin-top:8px">Stem kiezen</label>
+            <select id="voiceSelect" style="width:100%;padding:8px;border-radius:8px"></select>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="small">Systeem instellingen</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="saveSettings" class="btn-ghost" style="flex:1">Opslaan</button>
+              <button id="restoreSettings" class="btn-ghost" style="flex:1">Herstel</button>
+            </div>
+          </div>
+
+          <div style="margin-top:10px" class="stats">
+            <div class="stat"><div class="small">Opgeroepen</div><div id="calledCount" style="font-weight:800">0</div></div>
+            <div class="stat"><div class="small">Resterend</div><div id="remainingCount" style="font-weight:800">75</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="small">Resterende nummers</div>
+        <div id="remainingList" class="list"></div>
+      </div>
+
+      <div class="card">
+        <div class="small">Snel tips</div>
+        <ul style="color:var(--muted);padding-left:16px;margin:8px 0 0 0">
+          <li>Kid Mode: knop 10s cooldown.</li>
+          <li>AI Mode: automatisch elke 10s (start/stop knop beschikbaar).</li>
+          <li>Prof Mode: direct klikken.</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Victory overlay -->
+  <div id="victory" role="dialog" aria-modal="true">
+    <div style="position:relative;z-index:2">
+      <h2>✨ Kies Uw cadeau!! ✨</h2>
+      <p class="small">Tik ergens op het scherm om terug te gaan naar het spel.</p>
+    </div>
+    <div class="glitter" aria-hidden="true"></div>
+  </div>
 
 <script>
-/* 🎄 Sparkle generator */
-function spawnSparkle() {
-    const s = document.createElement("div");
-    s.className = "sparkle";
-    s.style.left = Math.random() * 100 + "vw";
-    s.style.top = Math.random() * 100 + "vh";
-    s.style.animationDuration = (Math.random()*3+2) + "s";
-    document.body.appendChild(s);
-    setTimeout(()=>s.remove(),4000);
-}
-setInterval(spawnSparkle, 500);
+/* --- FIXED TTS Bingo app --- */
 
+/* UI refs */
+const maxNumberRange = document.getElementById('maxNumber');
+const maxLabel = document.getElementById('maxLabel');
+const remainingList = document.getElementById('remainingList');
+const lastCalled = document.getElementById('lastCalled');
+const calledCount = document.getElementById('calledCount');
+const remainingCount = document.getElementById('remainingCount');
 
-/* --- VARIABLES --- */
-let usedNumbers = JSON.parse(localStorage.getItem("usedNumbers")) || [];
+const ttsToggle = document.getElementById('ttsToggle');
+const voiceSelect = document.getElementById('voiceSelect');
+const saveSettingsBtn = document.getElementById('saveSettings');
+const restoreSettingsBtn = document.getElementById('restoreSettings');
+
+const nextBtn = document.getElementById('nextBtn');
+const settingsToggle = document.getElementById('settingsToggle');
+const kidBtn = document.getElementById('kidBtn');
+const aiBtn = document.getElementById('aiBtn');
+const profBtn = document.getElementById('profBtn');
+const startAI = document.getElementById('startAI');
+const stopAI = document.getElementById('stopAI');
+const resetBtn = document.getElementById('resetBtn');
+const bingoBtn = document.getElementById('bingoBtn');
+
+const ball = document.getElementById('ball');
+const ballInner = document.getElementById('ballInner');
+
+const victory = document.getElementById('victory');
+const glitterLayer = victory.querySelector('.glitter');
+
+let maxNumber = 75;
+let remaining = [];
+let called = [];
+let mode = 'prof'; // kid | ai | prof
+let ttsEnabled = false;
+let aiTimer = null;
+let kidLock = false;
+
+/* Voices array */
 let voices = [];
-let mode = localStorage.getItem("mode") || "pro";
-let ttsEnabled = localStorage.getItem("tts") === "true";
-let maxNumber = Number(localStorage.getItem("max")) || 75;
-let cooldownActive = false;
-let aiInterval = null;
 
+/* Populate voices safely, using index values */
+function populateVoices(){
+  voices = speechSynthesis.getVoices() || [];
+  voiceSelect.innerHTML = '';
+  voices.forEach((v, idx) => {
+    const opt = document.createElement('option');
+    opt.value = String(idx); // store index as string but parse later
+    opt.textContent = `${v.name} — ${v.lang}`;
+    voiceSelect.appendChild(opt);
+  });
 
-/* DOM elements */
-const synth = window.speechSynthesis;
-const ttsToggle = document.getElementById("ttsToggle");
-const voiceSelect = document.getElementById("voiceSelect");
-const rangeValue = document.getElementById("rangeValue");
-const ball = document.getElementById("ball");
-const numberText = document.getElementById("numberText");
-const nextBtn = document.getElementById("nextNumber");
-const numberRange = document.getElementById("numberRange");
-const settingsMenu = document.getElementById("settings");
-
-
-/* Restore UI values */
-numberRange.value = maxNumber;
-rangeValue.textContent = maxNumber;
-ttsToggle.checked = ttsEnabled;
-
-
-/* Load voices */
-function loadVoices() {
-    voices = synth.getVoices();
-    voiceSelect.innerHTML = "";
-
-    voices.forEach((voice, i) => {
-        let opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = voice.name;
-        voiceSelect.appendChild(opt);
-    });
-
-    if(localStorage.getItem("voiceIndex")){
-        voiceSelect.value = localStorage.getItem("voiceIndex");
-    }
+  // restore saved voice index if present and valid
+  const saved = localStorage.getItem('bingo_voiceIndex');
+  if(saved !== null && voiceSelect.options.length > Number(saved)){
+    voiceSelect.value = String(saved);
+  }
 }
-loadVoices();
-speechSynthesis.onvoiceschanged = loadVoices;
 
+/* Wait for voices to be available */
+if (speechSynthesis && speechSynthesis.getVoices().length === 0) {
+  // voices may load asynchronously
+  speechSynthesis.onvoiceschanged = () => {
+    populateVoices();
+  };
+} else {
+  populateVoices();
+}
+
+/* Restore saved settings */
+(function restoreOnLoad(){
+  const s = JSON.parse(localStorage.getItem('bingo_settings')||'{}');
+  maxNumber = s.maxNumber || 75;
+  mode = s.mode || 'prof';
+  ttsEnabled = s.ttsEnabled === true;
+  const savedCalled = JSON.parse(localStorage.getItem('bingo_called')||'[]');
+
+  // UI
+  maxNumberRange.value = maxNumber;
+  maxLabel.textContent = maxNumber;
+  ttsToggle.checked = ttsEnabled;
+  setModeButtons(mode);
+
+  if(savedCalled && savedCalled.length>0){
+    called = savedCalled.slice();
+    const all = Array.from({length:maxNumber},(_,i)=>i+1);
+    remaining = all.filter(n => !called.includes(n));
+  } else {
+    initNumbersFromMax(maxNumber);
+  }
+
+  // restore voice index if present (populateVoices might run later)
+  const savedVoice = localStorage.getItem('bingo_voiceIndex');
+  if(savedVoice !== null){
+    // if voices already populated, set selection; otherwise populateVoices() will set it
+    setTimeout(()=> {
+      if(voiceSelect.options.length > Number(savedVoice)) voiceSelect.value = String(savedVoice);
+    }, 300);
+  }
+
+  updateLists();
+})();
+
+function initNumbersFromMax(n){
+  maxNumber = Number(n) || 75;
+  remaining = Array.from({length:maxNumber},(_,i)=>i+1);
+  shuffleArray(remaining);
+  called = [];
+  localStorage.setItem('bingo_called', JSON.stringify(called));
+}
+
+function shuffleArray(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+}
+
+function updateLists(){
+  calledCount.textContent = called.length;
+  remainingCount.textContent = remaining.length;
+  remainingList.innerHTML = remaining.slice(0,1000).map(n=>`<span class="pill">${n}</span>`).join('');
+  lastCalled.innerHTML = called.slice(0,200).map(n=>`<span class="pill" style="background:linear-gradient(90deg,var(--accent2),var(--accent));color:white">${n}</span>`).join('');
+}
+
+function showBallText(text){
+  ballInner.textContent = text;
+  ball.classList.remove('ball-hidden');
+  ball.classList.add('spin');
+  setTimeout(()=> ball.classList.remove('spin'),900);
+}
+function hideBall(){
+  ball.classList.add('ball-hidden');
+}
+
+/* pick number + TTS behavior */
+function pickNumber(){
+  if(remaining.length === 0){
+    speakDutch('Alle nummers zijn geweest. Spel beëindigd.');
+    stopAIIfRunning();
+    return;
+  }
+  const num = remaining.shift();
+  called.unshift(num);
+  localStorage.setItem('bingo_called', JSON.stringify(called));
+  updateLists();
+  showBallText(num);
+
+  // Decide TTS or timeout:
+  if(ttsToggle.checked){
+    // try to use selected voice (if available)
+    const voiceIdx = (voiceSelect.value != null) ? Number(voiceSelect.value) : null;
+    speakDutch(`De volgende nummer is ${num}, ik herhaal ${num}`, ()=> { hideBall(); }, voiceIdx);
+  } else {
+    setTimeout(()=> hideBall(),8000);
+  }
+  return num;
+}
+
+/* speak util: accepts optional voiceIndex and onend callback */
+function speakDutch(text, onend, voiceIndex){
+  if(!('speechSynthesis' in window)){
+    if(onend) onend();
+    return;
+  }
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'nl-NL';
+  utter.rate = 0.95;
+  utter.pitch = 1;
+  // set voice if available
+  if(typeof voiceIndex === 'number' && voices[voiceIndex]){
+    utter.voice = voices[voiceIndex];
+  } else {
+    // try saved index from localStorage
+    const saved = localStorage.getItem('bingo_voiceIndex');
+    if(saved !== null && voices[Number(saved)]) utter.voice = voices[Number(saved)];
+    // else let browser pick default
+  }
+  utter.onend = () => { if(onend) onend(); };
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+
+/* Mode UI */
+function setModeButtons(m){
+  mode = m;
+  kidBtn.setAttribute('aria-pressed', m==='kid');
+  aiBtn.setAttribute('aria-pressed', m==='ai');
+  profBtn.setAttribute('aria-pressed', m==='prof');
+  [kidBtn,aiBtn,profBtn].forEach(b=>b.classList.add('btn-ghost'));
+  if(m==='kid') kidBtn.classList.remove('btn-ghost');
+  if(m==='ai') aiBtn.classList.remove('btn-ghost');
+  if(m==='prof') profBtn.classList.remove('btn-ghost');
+}
 
 /* Events */
-
-numberRange.oninput = () => {
-    rangeValue.textContent = numberRange.value;
-    maxNumber = numberRange.value;
-    localStorage.setItem("max", maxNumber);
-};
-
-ttsToggle.addEventListener("change", () => {
-    ttsEnabled = ttsToggle.checked;
-    localStorage.setItem("tts", ttsEnabled);
+maxNumberRange.addEventListener('input', e=>{
+  maxNumber = Number(e.target.value);
+  maxLabel.textContent = maxNumber;
 });
 
-voiceSelect.addEventListener("change", () => {
-    localStorage.setItem("voiceIndex", voiceSelect.value);
+saveSettingsBtn.addEventListener('click', ()=>{
+  persistSettings();
+  alert('Instellingen opgeslagen!');
+});
+restoreSettingsBtn.addEventListener('click', ()=>{
+  localStorage.removeItem('bingo_settings');
+  localStorage.removeItem('bingo_called');
+  initNumbersFromMax(maxNumberRange.value);
+  updateLists();
+  alert('Instellingen gereset.');
 });
 
+kidBtn.addEventListener('click', ()=> { setModeButtons('kid'); persistSettings(); });
+aiBtn.addEventListener('click', ()=> { setModeButtons('ai'); persistSettings(); });
+profBtn.addEventListener('click', ()=> { setModeButtons('prof'); persistSettings(); });
 
-document.getElementById("kidMode").onclick = () => { mode="kid"; localStorage.setItem("mode",mode); };
-document.getElementById("aiMode").onclick = () => { mode="ai"; localStorage.setItem("mode",mode); };
-document.getElementById("proMode").onclick = () => { mode="pro"; localStorage.setItem("mode",mode); };
+nextBtn.addEventListener('click', ()=> {
+  if(!document.body.dataset.started){
+    document.body.dataset.started = 'true';
+    try{ document.querySelector('.sidebar').style.display='none'; }catch(e){}
+    persistSettings();
+  }
 
-
-document.getElementById("startGame").addEventListener("click", () => {
-    settingsMenu.remove();
-    nextBtn.style.display = "block";
-
-    if (mode === "ai") {
-        aiInterval = setInterval(generateNumber, 10000);
-    }
+  if(mode==='kid'){
+    if(kidLock) return;
+    pickNumber();
+    kidLock = true;
+    nextBtn.disabled = true;
+    let seconds=10;
+    const original = nextBtn.textContent;
+    nextBtn.textContent = `Wacht ${seconds}s`;
+    const t = setInterval(()=>{
+      seconds--;
+      if(seconds<=0){ clearInterval(t); kidLock=false; nextBtn.disabled=false; nextBtn.textContent=original; }
+      else nextBtn.textContent = `Wacht ${seconds}s`;
+    },1000);
+  } else if(mode==='ai'){
+    if(aiTimer) return;
+    pickNumber();
+  } else {
+    pickNumber();
+  }
 });
 
-
-nextBtn.addEventListener("click", () => {
-    if (mode === "kid" && cooldownActive) return;
-    generateNumber();
-
-    if (mode === "kid") {
-        cooldownActive = true;
-        nextBtn.style.opacity = 0.4;
-        setTimeout(() => {
-            cooldownActive = false;
-            nextBtn.style.opacity = 1;
-        }, 10000);
-    }
+/* settings toggle */
+settingsToggle.addEventListener('click', ()=>{
+  const side = document.querySelector('.sidebar');
+  if(!side) return;
+  side.style.display = (side.style.display === 'none' ? '' : 'none');
 });
 
-
-/* MAIN NUMBER FUNCTION */
-function generateNumber() {
-    if (usedNumbers.length >= maxNumber) {
-        alert("Alle nummers zijn geweest 🎉");
-        return;
-    }
-
-    let num;
-    do { num = Math.floor(Math.random() * maxNumber) + 1; }
-    while (usedNumbers.includes(num));
-
-    usedNumbers.push(num);
-    localStorage.setItem("usedNumbers", JSON.stringify(usedNumbers));
-
-    numberText.textContent = num;
-    ball.style.transform = "translate(-50%, -50%) scale(1)";
-
-    if (ttsEnabled) speakNumber(num);
-    else setTimeout(hideBall, 8000);
+/* start/stop AI */
+startAI.addEventListener('click', ()=>{
+  if(aiTimer) return;
+  aiTimer = setInterval(()=> {
+    if(remaining.length===0) { stopAIIfRunning(); return; }
+    pickNumber();
+  },10000);
+  startAI.style.display = 'none';
+  stopAI.style.display = '';
+  persistSettings();
+});
+stopAI.addEventListener('click', stopAIIfRunning);
+function stopAIIfRunning(){
+  if(aiTimer){ clearInterval(aiTimer); aiTimer=null; startAI.style.display=''; stopAI.style.display='none'; }
 }
 
+/* reset */
+resetBtn.addEventListener('click', ()=>{
+  if(!confirm('Reset spel? alle geroepen nummers worden gewist.')) return;
+  initNumbersFromMax(maxNumber);
+  updateLists();
+  hideBall();
+  stopAIIfRunning();
+  localStorage.removeItem('bingo_called');
+  persistSettings();
+});
 
-/* SPEECH */
-function speakNumber(num) {
-    const msg = new SpeechSynthesisUtterance(`De volgende nummer is ${num}. Ik herhaal ${num}.`);
-    msg.voice = voices[voiceSelect.value];
-    msg.onend = hideBall;
-    synth.speak(msg);
+/* bingo overlay */
+bingoBtn.addEventListener('click', ()=> showVictoryOverlay());
+victory.addEventListener('click', ()=> hideVictoryOverlay());
+
+/* overlay glitter */
+function createGlitter(){
+  glitterLayer.innerHTML = '';
+  const count = 36;
+  for(let i=0;i<count;i++){
+    const d = document.createElement('div');
+    const size = Math.random()*12+6;
+    d.style.position='absolute';
+    d.style.left = (Math.random()*100)+'%';
+    d.style.top = (Math.random()*100)+'%';
+    d.style.width = size+'px';
+    d.style.height = size+'px';
+    d.style.background = `radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,235,0,0.9))`;
+    d.style.borderRadius = '50%';
+    d.style.boxShadow = '0 0 10px rgba(255,230,0,0.8)';
+    d.style.transform = `translate(-50%,-50%) scale(${Math.random()*1.4+0.6})`;
+    d.style.animation = `glowAnim ${(Math.random()*1.6+0.8)}s ease-in-out infinite alternate`;
+    glitterLayer.appendChild(d);
+  }
+}
+const s = document.createElement('style');
+s.textContent = `@keyframes glowAnim { from {opacity:0.2; transform:translate(-50%,-50%) scale(0.6);} to {opacity:1; transform:translate(-50%,-50%) scale(1.15);} }`;
+document.head.appendChild(s);
+function showVictoryOverlay(){ createGlitter(); victory.style.display='flex'; }
+function hideVictoryOverlay(){ victory.style.display='none'; }
+
+/* persist settings */
+function persistSettings(){
+  const s = {
+    maxNumber: Number(maxNumberRange.value),
+    mode,
+    ttsEnabled: ttsToggle.checked,
+    voiceIndex: voiceSelect.value != null ? Number(voiceSelect.value) : null
+  };
+  localStorage.setItem('bingo_settings', JSON.stringify(s));
+  if(s.voiceIndex != null) localStorage.setItem('bingo_voiceIndex', String(s.voiceIndex));
 }
 
-
-/* HIDE ANIMATION */
-function hideBall() {
-    ball.style.transform = "translate(-50%, -50%) scale(0)";
+/* initialize on first load */
+if(remaining.length === 0 && called.length === 0){
+  initNumbersFromMax(maxNumberRange.value || maxNumber);
+  updateLists();
 }
+
+/* restore saved voice selection after voices populated */
+setTimeout(()=> {
+  const saved = localStorage.getItem('bingo_voiceIndex');
+  if(saved !== null && voiceSelect.options.length > Number(saved)) voiceSelect.value = String(saved);
+},600);
+
+/* keyboard */
+window.addEventListener('keydown', e=>{
+  if(e.code === 'Space'){ e.preventDefault(); if(mode !== 'ai' || !aiTimer) nextBtn.click(); }
+});
 </script>
 </body>
 </html>
