@@ -97,36 +97,57 @@ button:hover {
     display: none;
 }
 
-/* BALL */
+/* THE NEW SUPER BALL */
 #ball {
     position: absolute;
     top: 55%;
     left: 50%;
-    width: 200px;
-    height: 200px;
+    width: 220px;
+    height: 220px;
     transform: translate(-50%, -50%) scale(0);
-    background: radial-gradient(circle, white 55%, #cfcfcf 90%);
-    border: 7px solid #ff0000;
+    background: radial-gradient(circle, white 50%, #d9d9d9 85%);
+    border: 8px solid #ff0000;
     border-radius: 50%;
-    box-shadow: 0 0 20px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4);
+    box-shadow: 0 0 25px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4);
     transition: .4s ease-out;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* SPIN ANIMATIE TIJDENS SOUND */
-@keyframes spinBall {
-    0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); }
+/* SPECTACULAIRE ANIMATIE TIJDENS SOUND */
+@keyframes megaSpin {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        filter: blur(0px);
+    }
+    25% {
+        transform: translate(-50%, -50%) scale(1.16) rotate(180deg);
+        filter: blur(3px);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(0.88) rotate(360deg);
+        filter: blur(5px);
+    }
+    75% {
+        transform: translate(-50%, -50%) scale(1.22) rotate(540deg);
+        filter: blur(3px);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1) rotate(720deg);
+        filter: blur(0px);
+    }
 }
 
 .spinActive {
-    animation: spinBall 1s linear infinite;
+    animation: megaSpin 1.15s ease-in-out infinite;
+    filter: blur(4px) brightness(1.35);
+    text-shadow: 0 0 20px rgba(255,255,255,0.9);
+    opacity: 1;
 }
 
 #numberText {
-    font-size: 85px;
+    font-size: 90px;
     font-weight: bold;
     color: #000;
 }
@@ -189,7 +210,7 @@ button:hover {
 
 <button id="nextNumber">Volgende Nummer ➡️</button>
 
-<div id="versionBadge">V1.71</div>
+<div id="versionBadge">V1.80</div>
 
 <script>
 let usedNumbers = [];  
@@ -215,6 +236,7 @@ numberRange.value = maxNumber;
 rangeValue.textContent = maxNumber;
 ttsToggle.checked = ttsEnabled;
 
+/* ---- LOAD VOICES ---- */
 function loadVoices() {
     voices = synth.getVoices();
     voiceSelect.innerHTML = "";
@@ -233,19 +255,20 @@ function loadVoices() {
 loadVoices();
 speechSynthesis.onvoiceschanged = loadVoices;
 
-/* NEW: SOUND FUNCTIE + SPIN */
+
+/* ---- SUPER ANIMATIE + SOUND ---- */
 function playNotification() {
     return new Promise(resolve => {
 
-        // Bal begint draaien
+        // Bal begint met de mega spin animatie
         ball.classList.add("spinActive");
 
         let audio = new Audio("./Sounds/Noti.mp3");
         audio.volume = 1.0;
 
         audio.onended = () => {
-            // Stop draaien als sound klaar is
-            ball.classList.remove("spinActive");
+            ball.classList.remove("spinActive");  
+            ball.style.filter = "blur(0px)";
             resolve();
         };
 
@@ -253,6 +276,8 @@ function playNotification() {
     });
 }
 
+
+/* ---- SETTINGS ---- */
 openSettings.onclick = () => settingsPanel.style.display = "block";
 document.getElementById("closeSettings").onclick = () => {
     settingsPanel.style.display = "none";
@@ -282,6 +307,8 @@ setTimeout(() => {
     }
 }, 1000);
 
+
+/* ---- BUTTON ---- */
 nextBtn.addEventListener("click", async () => {
     autoRefreshEnabled = false;
 
@@ -299,8 +326,10 @@ nextBtn.addEventListener("click", async () => {
     }
 });
 
-/* NUMBER GENERATION */
+
+/* ---- NUMBER LOGIC ---- */
 async function generateNumber() {
+
     if (usedNumbers.length >= maxNumber) {
         alert("Alle nummers zijn geweest 🎉");
         return;
@@ -315,17 +344,19 @@ async function generateNumber() {
     numberText.textContent = num;
     ball.style.transform = "translate(-50%, -50%) scale(1)";
 
-    await playNotification(); // << SOUND + SPIN HIER
+    await playNotification();
 
     if (ttsEnabled) speakNumber(num);
     else setTimeout(hideBall, 8000);
 }
 
-/* SPEECH */
+
+/* ---- TTS ---- */
 function speakNumber(num) {
 
-    // Stop animatie zodra TTS begint
+    // Stop animatie zodra TTS start
     ball.classList.remove("spinActive");
+    ball.style.filter = "blur(0px)";
 
     const msg = new SpeechSynthesisUtterance(`volgende nummer is ${num}. Ik herhaal ${num}.`);
     msg.voice = voices[voiceSelect.value];
@@ -334,7 +365,8 @@ function speakNumber(num) {
     synth.speak(msg);
 }
 
-/* HIDE BALL */
+
+/* ---- HIDE ---- */
 function hideBall() {
     ball.style.transform = "translate(-50%, -50%) scale(0)";
 }
