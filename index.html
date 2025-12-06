@@ -5,6 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kerst Bingo 🎄</title>
 
+<!-- AUTO REFRESH SCRIPT -->
+<script>
+// Auto-refresh staat standaard aan
+let autoRefreshEnabled = true;
+
+// Zodra de pagina is geladen, start een timer die elke minuut refresh uitvoert
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        if (autoRefreshEnabled) {
+            location.reload();
+        }
+    }, 60000); // 60 seconden
+});
+
+// Zodra er op 'Volgende Nummer' wordt gedrukt → auto-refresh uitzetten
+document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("click", (e) => {
+        if (e.target && e.target.id === "nextNumber") {
+            autoRefreshEnabled = false;
+        }
+    });
+});
+</script>
+
 <style>
 body {
     margin: 0;
@@ -16,7 +40,6 @@ body {
     text-align: center;
     overflow: hidden;
 }
-
 @keyframes bgMove {
     0% { background-position: 0% 0%; }
     100% { background-position: 100% 100%; }
@@ -37,10 +60,6 @@ body {
     box-shadow: 0 0 25px rgba(255,255,255,0.4);
     display: none;
     z-index: 9999;
-}
-
-#settingsPanel h2 {
-    margin-bottom: 10px;
 }
 
 .sliderValue {
@@ -110,8 +129,22 @@ button:hover {
     margin-top: 50px;
     font-size: 26px;
 }
+
+/* Version badge */
+#versionBadge {
+    position: fixed;
+    bottom: 8px;
+    right: 8px;
+    color: #ff0000;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10000;
+    background: transparent;
+    pointer-events: none;
+}
 </style>
 </head>
+
 <body>
 
 <h1>🎅 Kerst Muziek Bingo 🎄</h1>
@@ -145,17 +178,18 @@ button:hover {
     <button id="closeSettings">Opslaan & Sluiten</button>
 </div>
 
-
-
 <div id="ball">
     <span id="numberText"></span>
 </div>
 
 <button id="nextNumber">Volgende Nummer ➡️</button>
 
+<!-- Kleine rode versie nummer rechtsonder -->
+<div id="versionBadge">V1.5</div>
+
 <script>
 /* --- VARIABLES --- */
-let usedNumbers = [];  // SPEL WORDT NIET OPGESLAGEN = altijd leeg bij start
+let usedNumbers = [];  
 let voices = [];
 let mode = localStorage.getItem("mode") || "pro";
 let ttsEnabled = localStorage.getItem("tts") === "true";
@@ -175,12 +209,10 @@ const numberRange = document.getElementById("numberRange");
 const settingsPanel = document.getElementById("settingsPanel");
 const openSettings = document.getElementById("openSettings");
 
-
 /* Restore UI */
 numberRange.value = maxNumber;
 rangeValue.textContent = maxNumber;
 ttsToggle.checked = ttsEnabled;
-
 
 /* Load voices */
 function loadVoices() {
@@ -198,10 +230,8 @@ function loadVoices() {
         voiceSelect.value = localStorage.getItem("voiceIndex");
     }
 }
-
 loadVoices();
 speechSynthesis.onvoiceschanged = loadVoices;
-
 
 /* SETTINGS */
 openSettings.onclick = () => settingsPanel.style.display = "block";
@@ -216,20 +246,17 @@ document.getElementById("closeSettings").onclick = () => {
     maxNumber = numberRange.value;
 };
 
-
 /* Range update */
 numberRange.oninput = () => {
     rangeValue.textContent = numberRange.value;
 };
-
 
 /* Mode select */
 document.getElementById("kidMode").onclick = () => mode="kid";
 document.getElementById("aiMode").onclick = () => mode="ai";
 document.getElementById("proMode").onclick = () => mode="pro";
 
-
-/* Start game after closing settings the FIRST time */
+/* Start game */
 setTimeout(() => {
     nextBtn.style.display = "block";
     openSettings.style.display = "block";
@@ -239,10 +266,9 @@ setTimeout(() => {
     }
 }, 1000);
 
-
-
 /* DRAW BUTTON */
 nextBtn.addEventListener("click", () => {
+    autoRefreshEnabled = false; // <<< BELANGRIJK: auto-refresh uitzetten
     if (mode === "kid" && cooldownActive) return;
 
     generateNumber();
@@ -256,8 +282,6 @@ nextBtn.addEventListener("click", () => {
         }, 10000);
     }
 });
-
-
 
 /* MAIN NUMBER FUNCTION */
 function generateNumber() {
@@ -279,7 +303,6 @@ function generateNumber() {
     else setTimeout(hideBall, 8000);
 }
 
-
 /* SPEECH */
 function speakNumber(num) {
     const msg = new SpeechSynthesisUtterance(`De volgende nummer is ${num}. Ik herhaal ${num}.`);
@@ -289,310 +312,11 @@ function speakNumber(num) {
     synth.speak(msg);
 }
 
-
 /* HIDE BALL */
 function hideBall() {
     ball.style.transform = "translate(-50%, -50%) scale(0)";
 }
 </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kerst Bingo 🎄</title>
 
-<style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(130deg, #145214, #1e1e1e, #8b0000);
-    background-size: 400% 400%;
-    animation: bgMove 12s infinite alternate;
-    color: white;
-    text-align: center;
-    overflow: hidden;
-}
-
-@keyframes bgMove {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100% 100%; }
-}
-
-/* UI */
-#settingsPanel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 85%;
-    max-width: 500px;
-    transform: translate(-50%, -50%);
-    background: rgba(255,255,255,0.15);
-    padding: 20px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 25px rgba(255,255,255,0.4);
-    display: none;
-    z-index: 9999;
-}
-
-#settingsPanel h2 {
-    margin-bottom: 10px;
-}
-
-.sliderValue {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-button {
-    margin-top: 15px;
-    font-size: 22px;
-    padding: 12px 25px;
-    border-radius: 15px;
-    background: #ff0000;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: .3s;
-}
-button:hover {
-    transform: scale(1.07);
-    background: #ff3b3b;
-}
-
-.modeBtn {
-    width: 90%;
-    margin-top: 10px;
-}
-
-#openSettings {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #ffd000;
-    color: black;
-    padding: 10px 20px;
-    border-radius: 15px;
-    z-index: 9000;
-    display: none;
-}
-
-/* BALL */
-#ball {
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    width: 200px;
-    height: 200px;
-    transform: translate(-50%, -50%) scale(0);
-    background: radial-gradient(circle, white 55%, #cfcfcf 90%);
-    border: 7px solid #ff0000;
-    border-radius: 50%;
-    box-shadow: 0 0 20px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4);
-    transition: .4s ease-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#numberText {
-    font-size: 85px;
-    font-weight: bold;
-    color: #000;
-}
-
-#nextNumber {
-    display: none;
-    margin-top: 50px;
-    font-size: 26px;
-}
-</style>
-</head>
-<body>
-
-<h1>🎅 Kerst Muziek Bingo 🎄</h1>
-
-<button id="openSettings">⚙️ Instellingen</button>
-
-<!-- SETTINGS PANEL -->
-<div id="settingsPanel">
-    <h2>Instellingen 🎄</h2>
-
-    <label>Nummer limiet: <span id="rangeValue" class="sliderValue">75</span></label>
-    <input type="range" min="10" max="100" value="75" id="numberRange">
-
-    <h3>Gamemode:</h3>
-    <button class="modeBtn" id="kidMode">👶 Kid Mode</button>
-    <button class="modeBtn" id="aiMode">🤖 AI Mode</button>
-    <button class="modeBtn" id="proMode">🔥 Pro Mode</button>
-
-    <br><br>
-
-    <label>
-        Text-To-Speech:
-        <input type="checkbox" id="ttsToggle">
-    </label>
-
-    <label>
-        Stem Selecteren:
-        <select id="voiceSelect"></select>
-    </label>
-
-    <button id="closeSettings">Opslaan & Sluiten</button>
-</div>
-
-
-
-<div id="ball">
-    <span id="numberText"></span>
-</div>
-
-<button id="nextNumber">Volgende Nummer ➡️</button>
-
-<script>
-/* --- VARIABLES --- */
-let usedNumbers = [];  // SPEL WORDT NIET OPGESLAGEN = altijd leeg bij start
-let voices = [];
-let mode = localStorage.getItem("mode") || "pro";
-let ttsEnabled = localStorage.getItem("tts") === "true";
-let maxNumber = Number(localStorage.getItem("max")) || 75;
-let cooldownActive = false;
-let aiInterval = null;
-
-/* DOM elements */
-const synth = window.speechSynthesis;
-const ttsToggle = document.getElementById("ttsToggle");
-const voiceSelect = document.getElementById("voiceSelect");
-const rangeValue = document.getElementById("rangeValue");
-const ball = document.getElementById("ball");
-const numberText = document.getElementById("numberText");
-const nextBtn = document.getElementById("nextNumber");
-const numberRange = document.getElementById("numberRange");
-const settingsPanel = document.getElementById("settingsPanel");
-const openSettings = document.getElementById("openSettings");
-
-
-/* Restore UI */
-numberRange.value = maxNumber;
-rangeValue.textContent = maxNumber;
-ttsToggle.checked = ttsEnabled;
-
-
-/* Load voices */
-function loadVoices() {
-    voices = synth.getVoices();
-    voiceSelect.innerHTML = "";
-
-    voices.forEach((v, i) => {
-        let opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = v.name;
-        voiceSelect.appendChild(opt);
-    });
-
-    if (localStorage.getItem("voiceIndex")) {
-        voiceSelect.value = localStorage.getItem("voiceIndex");
-    }
-}
-
-loadVoices();
-speechSynthesis.onvoiceschanged = loadVoices;
-
-
-/* SETTINGS */
-openSettings.onclick = () => settingsPanel.style.display = "block";
-document.getElementById("closeSettings").onclick = () => {
-    settingsPanel.style.display = "none";
-
-    localStorage.setItem("tts", ttsToggle.checked);
-    localStorage.setItem("voiceIndex", voiceSelect.value);
-    localStorage.setItem("max", numberRange.value);
-    localStorage.setItem("mode", mode);
-
-    maxNumber = numberRange.value;
-};
-
-
-/* Range update */
-numberRange.oninput = () => {
-    rangeValue.textContent = numberRange.value;
-};
-
-
-/* Mode select */
-document.getElementById("kidMode").onclick = () => mode="kid";
-document.getElementById("aiMode").onclick = () => mode="ai";
-document.getElementById("proMode").onclick = () => mode="pro";
-
-
-/* Start game after closing settings the FIRST time */
-setTimeout(() => {
-    nextBtn.style.display = "block";
-    openSettings.style.display = "block";
-
-    if (mode === "ai") {
-        aiInterval = setInterval(generateNumber, 10000);
-    }
-}, 1000);
-
-
-
-/* DRAW BUTTON */
-nextBtn.addEventListener("click", () => {
-    if (mode === "kid" && cooldownActive) return;
-
-    generateNumber();
-
-    if (mode === "kid") {
-        cooldownActive = true;
-        nextBtn.style.opacity = 0.4;
-        setTimeout(() => {
-            cooldownActive = false;
-            nextBtn.style.opacity = 1;
-        }, 10000);
-    }
-});
-
-
-
-/* MAIN NUMBER FUNCTION */
-function generateNumber() {
-    if (usedNumbers.length >= maxNumber) {
-        alert("Alle nummers zijn geweest 🎉");
-        return;
-    }
-
-    let num;
-    do { num = Math.floor(Math.random() * maxNumber) + 1; }
-    while (usedNumbers.includes(num));
-
-    usedNumbers.push(num);
-
-    numberText.textContent = num;
-    ball.style.transform = "translate(-50%, -50%) scale(1)";
-
-    if (ttsEnabled) speakNumber(num);
-    else setTimeout(hideBall, 8000);
-}
-
-
-/* SPEECH */
-function speakNumber(num) {
-    const msg = new SpeechSynthesisUtterance(`De volgende nummer is ${num}. Ik herhaal ${num}.`);
-    msg.voice = voices[voiceSelect.value];
-
-    msg.onend = hideBall;
-    synth.speak(msg);
-}
-
-
-/* HIDE BALL */
-function hideBall() {
-    ball.style.transform = "translate(-50%, -50%) scale(0)";
-}
-</script>
 </body>
 </html>
