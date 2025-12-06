@@ -3,224 +3,176 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>JStudios — Modern Game Hub</title>
-  <meta name="description" content="JStudios: een moderne online hub voor games. Startpagina: About Us." />
+  <title>JStudios — Modern Hub</title>
 
   <style>
     :root{
-      --bg:#0f1724; /* donkerblauw/charcoal */
-      --card:#0b1220;
-      --accent:#00d4ff;
-      --accent-2:#7c3aed;
-      --muted:#9aa4b2;
-      --glass: rgba(255,255,255,0.04);
-      --radius:16px;
-      --maxw:1100px;
-      --gap:18px;
-      --shadow: 0 6px 18px rgba(2,6,23,0.6);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --bg:#ffffff;
+      --text:#111;
+      --primary:#2d72ff;
+      --soft:#f5f7fa;
+      --border:#e5e7eb;
+      --radius:18px;
+      --maxw:1200px;
+      font-family: 'Inter', sans-serif;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%;}
+    *{box-sizing:border-box;margin:0;padding:0}
+
     body{
-      margin:0;
-      min-height:100%;
-      background: linear-gradient(180deg, #071028 0%, #07121a 50%, #061219 100%);
-      color:#e6eef6;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      background:var(--soft);
+      color:var(--text);
       display:flex;
-      align-items:center;
       justify-content:center;
-      padding:40px 20px;
+      padding:40px 16px;
     }
 
-    .shell{
+    .container{
       width:100%;
       max-width:var(--maxw);
-      border-radius:24px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      box-shadow: var(--shadow);
+      background:#fff;
+      border-radius:var(--radius);
+      box-shadow:0 6px 20px rgba(0,0,0,0.07);
       overflow:hidden;
-      border: 1px solid rgba(255,255,255,0.03);
     }
 
     header{
+      padding:22px 30px;
+      border-bottom:1px solid var(--border);
       display:flex;
       align-items:center;
-      gap:20px;
-      padding:18px 22px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    }
-
-    .brand{
-      display:flex;gap:12px;align-items:center;
+      gap:18px;
     }
 
     .logo{
-      height:48px;width:48px;border-radius:12px;display:grid;place-items:center;
-      background:linear-gradient(135deg,var(--accent),var(--accent-2));
-      font-weight:700;font-size:18px;color:#042233;box-shadow:0 6px 20px rgba(124,58,237,0.18);
+      background:var(--primary);
+      color:#fff;
+      height:48px;width:48px;border-radius:var(--radius);
+      display:grid;place-items:center;
+      font-weight:700;font-size:18px;
     }
 
-    .brand h1{font-size:18px;margin:0}
-    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    nav{
+      margin-left:auto;
+      display:flex;gap:14px;
+    }
 
-    nav{margin-left:auto;display:flex;gap:10px}
     .tab{
-      appearance:none;border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;font-size:14px;
-    }
-    .tab[aria-selected="true"]{
-      color: white;
-      background: linear-gradient(90deg, rgba(0,212,255,0.08), rgba(124,58,237,0.06));
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.02);
-    }
-
-    main{
-      display:grid;grid-template-columns:1fr;gap:var(--gap);padding:28px 32px 40px;
+      padding:10px 16px;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      background:#fff;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
     }
 
-    .layout{
-      display:grid;grid-template-columns: 1fr 360px;gap:24px;align-items:start;
+    .tab.active{
+      background:var(--primary);
+      color:#fff;
+      border-color:var(--primary);
     }
 
-    /* left column */
-    .content{
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-      border-radius:var(--radius);padding:22px;min-height:300px;border:1px solid rgba(255,255,255,0.02);
+    main{padding:30px;}
+
+    .page{display:none;}
+    .page.active{display:block;}
+
+    /* webshop/restaurant style */
+    .product-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+      gap:20px;
+      margin-top:20px;
     }
 
-    h2{margin:0 0 10px 0;font-size:20px}
-    p.lead{color:var(--muted);margin-top:6px;font-size:14px}
-
-    /* games list */
-    .games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:18px}
-
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-      border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:10px;transition:transform .18s ease, box-shadow .18s ease;cursor:pointer;
+    .product{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      transition:0.2s;
     }
-    .card:hover{transform:translateY(-6px);box-shadow:0 12px 36px rgba(2,6,23,0.6)}
-    .card .thumb{height:120px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#042233;font-weight:800;font-size:18px}
-    .card h3{margin:0;font-size:16px}
-    .card p{margin:0;color:var(--muted);font-size:13px}
-    .card .actions{display:flex;gap:8px;margin-top:auto}
+    .product:hover{transform:translateY(-4px);box-shadow:0 8px 22px rgba(0,0,0,0.08)}
+
+    .thumb{
+      background:var(--primary);
+      height:150px;
+      border-radius:var(--radius);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-size:22px;font-weight:700;color:#fff;
+    }
+
     .btn{
-      display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:var(--muted);font-weight:700;cursor:pointer;text-decoration:none;font-size:13px
-    }
-    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042233}
-
-    /* right column */
-    .aside{background:var(--glass);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
-    .aside h4{margin:0 0 8px 0}
-    .meta{font-size:13px;color:var(--muted);line-height:1.6}
-
-    footer{padding:14px 22px;border-top:1px solid rgba(255,255,255,0.02);font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
-
-    /* responsive */
-    @media (max-width:880px){
-      .layout{grid-template-columns:1fr;}
-      .aside{order:2}
+      padding:10px 14px;
+      border-radius:var(--radius);
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+      text-align:center;
+      background:var(--primary);
+      color:white;
+      text-decoration:none;
     }
   </style>
 </head>
 <body>
-  <div class="shell" role="application" aria-labelledby="brand-title">
+  <div class="container">
     <header>
-      <div class="brand" id="brand-title">
-        <div class="logo">JS</div>
-        <div>
-          <h1>JStudios</h1>
-          <p>Modern Game Hub</p>
-        </div>
-      </div>
-
-      <nav role="tablist" aria-label="Hoofd navigatie">
-        <button class="tab" role="tab" id="tab-about" aria-selected="true" data-target="about">About Us</button>
-        <button class="tab" role="tab" id="tab-games" aria-selected="false" data-target="games">Games</button>
+      <div class="logo">JS</div>
+      <h1>JStudios</h1>
+      
+      <nav>
+        <button class="tab" data-tab="about">About Us</button>
+        <button class="tab" data-tab="games">Games</button>
       </nav>
     </header>
 
     <main>
-      <div class="layout">
-        <section class="content" id="panel-about" role="tabpanel" aria-labelledby="tab-about">
-          <h2>About Us</h2>
-          <p class="lead">Welkom bij <strong>JStudios</strong> — jouw moderne plek voor toffe indie-games en prototypes. De startpagina is <em>About Us</em>, hier vind je wie we zijn en wat we doen.</p>
+      <section id="page-about" class="page">
+        <h2>Welkom bij JStudios</h2>
+        <p style="margin-top:10px;font-size:15px;color:#444">Dit is onze moderne hub voor games, gebouwd in een webshop/restaurant-stijl voor een strakke en professionele look.</p>
+      </section>
 
-          <div style="margin-top:18px;display:grid;gap:12px">
-            <p>Wij maken simpele, leuke spelletjes en publiceren ze op GitHub Pages. Er staat nu één spel in de games-sectie — meer komen later. Scroll of klik op <strong>Games</strong> om het te bekijken.</p>
-
-            <div style="background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.01)">
-              <h3 style="margin:0 0 6px 0">Onze missie</h3>
-              <p class="lead" style="margin:0">Toegankelijke, vrolijke spelletjes bouwen die iedereen in z'n browser kan spelen.</p>
-            </div>
-          </div>
-        </section>
-
-        <aside class="aside" id="panel-games" role="tabpanel" aria-labelledby="tab-games" hidden>
-          <h4>Games</h4>
-          <p class="meta">Hier staat een mooie lijst met spellen. Voor nu is er één titel — maar geen zorgen: de rest komt nog!</p>
-
-          <div class="games-grid" style="margin-top:12px">
-            <!-- Game card: Kerst Bingo -->
-            <article class="card" aria-labelledby="game-bingo">
-              <div class="thumb">🎄 Kerst Bingo</div>
-              <h3 id="game-bingo">Kerst Bingo</h3>
-              <p>Een gezellig bingospel met een kersttintje. Klik hieronder om te spelen (GitHub Pages).</p>
-              <div class="actions">
-                <a class="btn primary" href="https://joey226611.github.io/BINGO/Games/Bingo" target="_blank" rel="noopener noreferrer" role="button">Speel nu</a>
-                <a class="btn" href="#" onclick="alert('Meer info komt later!');return false;">Meer info</a>
-              </div>
-            </article>
-
-          </div>
-
-          <div style="margin-top:14px;border-top:1px dashed rgba(255,255,255,0.02);padding-top:12px;color:var(--muted);font-size:13px">
-            Tip: dit is een prototype — wil je dat ik meerdere game-cards of GitHub Pages-ready structuur toevoeg?
-          </div>
-        </aside>
-      </div>
+      <section id="page-games" class="page">
+        <h2>Onze Games</h2>
+        <div class="product-grid">
+          <article class="product">
+            <div class="thumb">🎄 Kerst Bingo</div>
+            <h3 style="font-size:18px">Kerst Bingo</h3>
+            <p style="color:#555;font-size:14px">Een gezellig spel in een moderne presentatie.</p>
+            <a class="btn" href="https://joey226611.github.io/BINGO/Games/Bingo" target="_blank">Speel nu</a>
+          </article>
+        </div>
+      </section>
     </main>
-
-    <footer>
-      <div>© <strong>JStudios</strong> — Built with ❤️ by Joey</div>
-      <div style="opacity:.9">Versie 1.0</div>
-    </footer>
   </div>
 
   <script>
-    // Eenvoudige tab switching (About Us is standaard zichtbaar)
-    const tabs = document.querySelectorAll('[role="tab"]');
-    const panels = document.querySelectorAll('[role="tabpanel"]');
+    const tabs = document.querySelectorAll('.tab');
+    const pages = {
+      about: document.getElementById('page-about'),
+      games: document.getElementById('page-games')
+    };
 
-    function showPanel(id){
-      panels.forEach(p=>{
-        if(p.id === 'panel-'+id){
-          p.hidden = false;
-        } else {
-          p.hidden = true;
-        }
-      });
-      tabs.forEach(t=> t.setAttribute('aria-selected', t.dataset.target === id ? 'true' : 'false'));
+    function switchTab(name){
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      Object.keys(pages).forEach(key => pages[key].classList.toggle('active', key === name));
+      location.hash = name;
     }
 
     tabs.forEach(tab => {
-      tab.addEventListener('click', () => showPanel(tab.dataset.target));
-      tab.addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); tab.click(); }
-      });
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
     });
 
-    // Ensure About is visible on first load
-    showPanel('about');
-
-    // Accessibility: allow focus styles when using keyboard
-    function handleFirstTab(e) {
-      if (e.key === 'Tab') document.body.classList.add('user-is-tabbing');
-      window.removeEventListener('keydown', handleFirstTab);
-    }
-    window.addEventListener('keydown', handleFirstTab);
+    // On load: check URL hash
+    const start = location.hash.replace('#','') || 'about';
+    switchTab(start);
   </script>
 </body>
 </html>
