@@ -1,323 +1,226 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kerst Bingo 🎄</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JStudios — Modern Game Hub</title>
+  <meta name="description" content="JStudios: een moderne online hub voor games. Startpagina: About Us." />
 
-<!-- AUTO REFRESH SCRIPT -->
-<script>
-// Auto-refresh staat standaard aan
-let autoRefreshEnabled = true;
+  <style>
+    :root{
+      --bg:#0f1724; /* donkerblauw/charcoal */
+      --card:#0b1220;
+      --accent:#00d4ff;
+      --accent-2:#7c3aed;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.04);
+      --radius:16px;
+      --maxw:1100px;
+      --gap:18px;
+      --shadow: 0 6px 18px rgba(2,6,23,0.6);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
 
-// Zodra de pagina is geladen, start een timer die elke minuut refresh uitvoert
-window.addEventListener("load", () => {
-    setTimeout(() => {
-        if (autoRefreshEnabled) {
-            location.reload();
-        }
-    }, 60000); // 60 seconden
-});
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      min-height:100%;
+      background: linear-gradient(180deg, #071028 0%, #07121a 50%, #061219 100%);
+      color:#e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px 20px;
+    }
 
-// Zodra er op 'Volgende Nummer' wordt gedrukt → auto-refresh uitzetten
-document.addEventListener("DOMContentLoaded", () => {
-    document.addEventListener("click", (e) => {
-        if (e.target && e.target.id === "nextNumber") {
-            autoRefreshEnabled = false;
-        }
-    });
-});
-</script>
+    .shell{
+      width:100%;
+      max-width:var(--maxw);
+      border-radius:24px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
 
-<style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(130deg, #145214, #1e1e1e, #8b0000);
-    background-size: 400% 400%;
-    animation: bgMove 12s infinite alternate;
-    color: white;
-    text-align: center;
-    overflow: hidden;
-}
-@keyframes bgMove {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100% 100%; }
-}
+    header{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      padding:18px 22px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
 
-/* UI */
-#settingsPanel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 85%;
-    max-width: 500px;
-    transform: translate(-50%, -50%);
-    background: rgba(255,255,255,0.15);
-    padding: 20px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 25px rgba(255,255,255,0.4);
-    display: none;
-    z-index: 9999;
-}
+    .brand{
+      display:flex;gap:12px;align-items:center;
+    }
 
-.sliderValue {
-    font-size: 22px;
-    font-weight: bold;
-}
+    .logo{
+      height:48px;width:48px;border-radius:12px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      font-weight:700;font-size:18px;color:#042233;box-shadow:0 6px 20px rgba(124,58,237,0.18);
+    }
 
-button {
-    margin-top: 15px;
-    font-size: 22px;
-    padding: 12px 25px;
-    border-radius: 15px;
-    background: #ff0000;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: .3s;
-}
-button:hover {
-    transform: scale(1.07);
-    background: #ff3b3b;
-}
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
 
-.modeBtn {
-    width: 90%;
-    margin-top: 10px;
-}
+    nav{margin-left:auto;display:flex;gap:10px}
+    .tab{
+      appearance:none;border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;font-size:14px;
+    }
+    .tab[aria-selected="true"]{
+      color: white;
+      background: linear-gradient(90deg, rgba(0,212,255,0.08), rgba(124,58,237,0.06));
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.02);
+    }
 
-#openSettings {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #ffd000;
-    color: black;
-    padding: 10px 20px;
-    border-radius: 15px;
-    z-index: 9000;
-    display: none;
-}
+    main{
+      display:grid;grid-template-columns:1fr;gap:var(--gap);padding:28px 32px 40px;
+    }
 
-/* BALL */
-#ball {
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    width: 200px;
-    height: 200px;
-    transform: translate(-50%, -50%) scale(0);
-    background: radial-gradient(circle, white 55%, #cfcfcf 90%);
-    border: 7px solid #ff0000;
-    border-radius: 50%;
-    box-shadow: 0 0 20px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4);
-    transition: .4s ease-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    .layout{
+      display:grid;grid-template-columns: 1fr 360px;gap:24px;align-items:start;
+    }
 
-#numberText {
-    font-size: 85px;
-    font-weight: bold;
-    color: #000;
-}
+    /* left column */
+    .content{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      border-radius:var(--radius);padding:22px;min-height:300px;border:1px solid rgba(255,255,255,0.02);
+    }
 
-#nextNumber {
-    display: none;
-    margin-top: 50px;
-    font-size: 26px;
-}
+    h2{margin:0 0 10px 0;font-size:20px}
+    p.lead{color:var(--muted);margin-top:6px;font-size:14px}
 
-/* Version badge */
-#versionBadge {
-    position: fixed;
-    bottom: 8px;
-    right: 8px;
-    color: #ff0000;
-    font-size: 12px;
-    font-weight: bold;
-    z-index: 10000;
-    background: transparent;
-    pointer-events: none;
-}
-</style>
+    /* games list */
+    .games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:18px}
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:10px;transition:transform .18s ease, box-shadow .18s ease;cursor:pointer;
+    }
+    .card:hover{transform:translateY(-6px);box-shadow:0 12px 36px rgba(2,6,23,0.6)}
+    .card .thumb{height:120px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#042233;font-weight:800;font-size:18px}
+    .card h3{margin:0;font-size:16px}
+    .card p{margin:0;color:var(--muted);font-size:13px}
+    .card .actions{display:flex;gap:8px;margin-top:auto}
+    .btn{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:var(--muted);font-weight:700;cursor:pointer;text-decoration:none;font-size:13px
+    }
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042233}
+
+    /* right column */
+    .aside{background:var(--glass);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .aside h4{margin:0 0 8px 0}
+    .meta{font-size:13px;color:var(--muted);line-height:1.6}
+
+    footer{padding:14px 22px;border-top:1px solid rgba(255,255,255,0.02);font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+
+    /* responsive */
+    @media (max-width:880px){
+      .layout{grid-template-columns:1fr;}
+      .aside{order:2}
+    }
+  </style>
 </head>
-
 <body>
+  <div class="shell" role="application" aria-labelledby="brand-title">
+    <header>
+      <div class="brand" id="brand-title">
+        <div class="logo">JS</div>
+        <div>
+          <h1>JStudios</h1>
+          <p>Modern Game Hub</p>
+        </div>
+      </div>
 
-<h1>🎅 Kerst Muziek Bingo 🎄</h1>
+      <nav role="tablist" aria-label="Hoofd navigatie">
+        <button class="tab" role="tab" id="tab-about" aria-selected="true" data-target="about">About Us</button>
+        <button class="tab" role="tab" id="tab-games" aria-selected="false" data-target="games">Games</button>
+      </nav>
+    </header>
 
-<button id="openSettings">⚙️ Instellingen</button>
+    <main>
+      <div class="layout">
+        <section class="content" id="panel-about" role="tabpanel" aria-labelledby="tab-about">
+          <h2>About Us</h2>
+          <p class="lead">Welkom bij <strong>JStudios</strong> — jouw moderne plek voor toffe indie-games en prototypes. De startpagina is <em>About Us</em>, hier vind je wie we zijn en wat we doen.</p>
 
-<!-- SETTINGS PANEL -->
-<div id="settingsPanel">
-    <h2>Instellingen 🎄</h2>
+          <div style="margin-top:18px;display:grid;gap:12px">
+            <p>Wij maken simpele, leuke spelletjes en publiceren ze op GitHub Pages. Er staat nu één spel in de games-sectie — meer komen later. Scroll of klik op <strong>Games</strong> om het te bekijken.</p>
 
-    <label>Nummer limiet: <span id="rangeValue" class="sliderValue">75</span></label>
-    <input type="range" min="10" max="100" value="75" id="numberRange">
+            <div style="background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.01)">
+              <h3 style="margin:0 0 6px 0">Onze missie</h3>
+              <p class="lead" style="margin:0">Toegankelijke, vrolijke spelletjes bouwen die iedereen in z'n browser kan spelen.</p>
+            </div>
+          </div>
+        </section>
 
-    <h3>Gamemode:</h3>
-    <button class="modeBtn" id="kidMode">👶 Kid Mode</button>
-    <button class="modeBtn" id="aiMode">🤖 AI Mode</button>
-    <button class="modeBtn" id="proMode">🔥 Pro Mode</button>
+        <aside class="aside" id="panel-games" role="tabpanel" aria-labelledby="tab-games" hidden>
+          <h4>Games</h4>
+          <p class="meta">Hier staat een mooie lijst met spellen. Voor nu is er één titel — maar geen zorgen: de rest komt nog!</p>
 
-    <br><br>
+          <div class="games-grid" style="margin-top:12px">
+            <!-- Game card: Kerst Bingo -->
+            <article class="card" aria-labelledby="game-bingo">
+              <div class="thumb">🎄 Kerst Bingo</div>
+              <h3 id="game-bingo">Kerst Bingo</h3>
+              <p>Een gezellig bingospel met een kersttintje. Klik hieronder om te spelen (GitHub Pages).</p>
+              <div class="actions">
+                <a class="btn primary" href="https://joey226611.github.io/BINGO/Games/Bingo" target="_blank" rel="noopener noreferrer" role="button">Speel nu</a>
+                <a class="btn" href="#" onclick="alert('Meer info komt later!');return false;">Meer info</a>
+              </div>
+            </article>
 
-    <label>
-        Text-To-Speech:
-        <input type="checkbox" id="ttsToggle">
-    </label>
+          </div>
 
-    <label>
-        Stem Selecteren:
-        <select id="voiceSelect"></select>
-    </label>
+          <div style="margin-top:14px;border-top:1px dashed rgba(255,255,255,0.02);padding-top:12px;color:var(--muted);font-size:13px">
+            Tip: dit is een prototype — wil je dat ik meerdere game-cards of GitHub Pages-ready structuur toevoeg?
+          </div>
+        </aside>
+      </div>
+    </main>
 
-    <button id="closeSettings">Opslaan & Sluiten</button>
-</div>
+    <footer>
+      <div>© <strong>JStudios</strong> — Built with ❤️ by Joey</div>
+      <div style="opacity:.9">Versie 1.0</div>
+    </footer>
+  </div>
 
-<div id="ball">
-    <span id="numberText"></span>
-</div>
+  <script>
+    // Eenvoudige tab switching (About Us is standaard zichtbaar)
+    const tabs = document.querySelectorAll('[role="tab"]');
+    const panels = document.querySelectorAll('[role="tabpanel"]');
 
-<button id="nextNumber">Volgende Nummer ➡️</button>
+    function showPanel(id){
+      panels.forEach(p=>{
+        if(p.id === 'panel-'+id){
+          p.hidden = false;
+        } else {
+          p.hidden = true;
+        }
+      });
+      tabs.forEach(t=> t.setAttribute('aria-selected', t.dataset.target === id ? 'true' : 'false'));
+    }
 
-<!-- Kleine rode versie nummer rechtsonder -->
-<div id="versionBadge">V1.6</div>
-
-<script>
-/* --- VARIABLES --- */
-let usedNumbers = [];  
-let voices = [];
-let mode = localStorage.getItem("mode") || "pro";
-let ttsEnabled = localStorage.getItem("tts") === "true";
-let maxNumber = Number(localStorage.getItem("max")) || 75;
-let cooldownActive = false;
-let aiInterval = null;
-
-/* DOM elements */
-const synth = window.speechSynthesis;
-const ttsToggle = document.getElementById("ttsToggle");
-const voiceSelect = document.getElementById("voiceSelect");
-const rangeValue = document.getElementById("rangeValue");
-const ball = document.getElementById("ball");
-const numberText = document.getElementById("numberText");
-const nextBtn = document.getElementById("nextNumber");
-const numberRange = document.getElementById("numberRange");
-const settingsPanel = document.getElementById("settingsPanel");
-const openSettings = document.getElementById("openSettings");
-
-/* Restore UI */
-numberRange.value = maxNumber;
-rangeValue.textContent = maxNumber;
-ttsToggle.checked = ttsEnabled;
-
-/* Load voices */
-function loadVoices() {
-    voices = synth.getVoices();
-    voiceSelect.innerHTML = "";
-
-    voices.forEach((v, i) => {
-        let opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = v.name;
-        voiceSelect.appendChild(opt);
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => showPanel(tab.dataset.target));
+      tab.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); tab.click(); }
+      });
     });
 
-    if (localStorage.getItem("voiceIndex")) {
-        voiceSelect.value = localStorage.getItem("voiceIndex");
+    // Ensure About is visible on first load
+    showPanel('about');
+
+    // Accessibility: allow focus styles when using keyboard
+    function handleFirstTab(e) {
+      if (e.key === 'Tab') document.body.classList.add('user-is-tabbing');
+      window.removeEventListener('keydown', handleFirstTab);
     }
-}
-loadVoices();
-speechSynthesis.onvoiceschanged = loadVoices;
-
-/* SETTINGS */
-openSettings.onclick = () => settingsPanel.style.display = "block";
-document.getElementById("closeSettings").onclick = () => {
-    settingsPanel.style.display = "none";
-
-    localStorage.setItem("tts", ttsToggle.checked);
-    localStorage.setItem("voiceIndex", voiceSelect.value);
-    localStorage.setItem("max", numberRange.value);
-    localStorage.setItem("mode", mode);
-
-    maxNumber = numberRange.value;
-};
-
-/* Range update */
-numberRange.oninput = () => {
-    rangeValue.textContent = numberRange.value;
-};
-
-/* Mode select */
-document.getElementById("kidMode").onclick = () => mode="kid";
-document.getElementById("aiMode").onclick = () => mode="ai";
-document.getElementById("proMode").onclick = () => mode="pro";
-
-/* Start game */
-setTimeout(() => {
-    nextBtn.style.display = "block";
-    openSettings.style.display = "block";
-
-    if (mode === "ai") {
-        aiInterval = setInterval(generateNumber, 10000);
-    }
-}, 1000);
-
-/* DRAW BUTTON */
-nextBtn.addEventListener("click", () => {
-    autoRefreshEnabled = false; // <<< BELANGRIJK: auto-refresh uitzetten
-    if (mode === "kid" && cooldownActive) return;
-
-    generateNumber();
-
-    if (mode === "kid") {
-        cooldownActive = true;
-        nextBtn.style.opacity = 0.4;
-        setTimeout(() => {
-            cooldownActive = false;
-            nextBtn.style.opacity = 1;
-        }, 10000);
-    }
-});
-
-/* MAIN NUMBER FUNCTION */
-function generateNumber() {
-    if (usedNumbers.length >= maxNumber) {
-        alert("Alle nummers zijn geweest 🎉");
-        return;
-    }
-
-    let num;
-    do { num = Math.floor(Math.random() * maxNumber) + 1; }
-    while (usedNumbers.includes(num));
-
-    usedNumbers.push(num);
-
-    numberText.textContent = num;
-    ball.style.transform = "translate(-50%, -50%) scale(1)";
-
-    if (ttsEnabled) speakNumber(num);
-    else setTimeout(hideBall, 8000);
-}
-
-/* SPEECH */
-function speakNumber(num) {
-    const msg = new SpeechSynthesisUtterance(`volgende nummer is ${num}. Ik herhaal ${num}.`);
-    msg.voice = voices[voiceSelect.value];
-
-    msg.onend = hideBall;
-    synth.speak(msg);
-}
-
-/* HIDE BALL */
-function hideBall() {
-    ball.style.transform = "translate(-50%, -50%) scale(0)";
-}
-</script>
-
+    window.addEventListener('keydown', handleFirstTab);
+  </script>
 </body>
 </html>
-
