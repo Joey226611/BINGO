@@ -16,7 +16,7 @@ window.addEventListener("load", () => {
         if (autoRefreshEnabled) {
             location.reload();
         }
-    }, 60000); // 60 seconden
+    }, 60000);
 });
 
 // Zodra er op 'Volgende Nummer' wordt gedrukt → auto-refresh uitzetten
@@ -45,7 +45,6 @@ body {
     100% { background-position: 100% 100%; }
 }
 
-/* UI */
 #settingsPanel {
     position: fixed;
     top: 50%;
@@ -100,7 +99,6 @@ button:hover {
     display: none;
 }
 
-/* BALL */
 #ball {
     position: absolute;
     top: 55%;
@@ -130,7 +128,6 @@ button:hover {
     font-size: 26px;
 }
 
-/* Version badge */
 #versionBadge {
     position: fixed;
     bottom: 8px;
@@ -151,7 +148,6 @@ button:hover {
 
 <button id="openSettings">⚙️ Instellingen</button>
 
-<!-- SETTINGS PANEL -->
 <div id="settingsPanel">
     <h2>Instellingen 🎄</h2>
 
@@ -184,11 +180,9 @@ button:hover {
 
 <button id="nextNumber">Volgende Nummer ➡️</button>
 
-<!-- Kleine rode versie nummer rechtsonder -->
 <div id="versionBadge">V1.6</div>
 
 <script>
-/* --- VARIABLES --- */
 let usedNumbers = [];  
 let voices = [];
 let mode = localStorage.getItem("mode") || "pro";
@@ -197,7 +191,6 @@ let maxNumber = Number(localStorage.getItem("max")) || 75;
 let cooldownActive = false;
 let aiInterval = null;
 
-/* DOM elements */
 const synth = window.speechSynthesis;
 const ttsToggle = document.getElementById("ttsToggle");
 const voiceSelect = document.getElementById("voiceSelect");
@@ -209,12 +202,21 @@ const numberRange = document.getElementById("numberRange");
 const settingsPanel = document.getElementById("settingsPanel");
 const openSettings = document.getElementById("openSettings");
 
+/* --- NIEUW: Notification Sound functie --- */
+function playNotification() {
+    return new Promise(resolve => {
+        let audio = new Audio("./Sounds/Noti.mp3");
+        audio.volume = 1.0;
+        audio.onended = resolve;
+        audio.play();
+    });
+}
+
 /* Restore UI */
 numberRange.value = maxNumber;
 rangeValue.textContent = maxNumber;
 ttsToggle.checked = ttsEnabled;
 
-/* Load voices */
 function loadVoices() {
     voices = synth.getVoices();
     voiceSelect.innerHTML = "";
@@ -233,7 +235,6 @@ function loadVoices() {
 loadVoices();
 speechSynthesis.onvoiceschanged = loadVoices;
 
-/* SETTINGS */
 openSettings.onclick = () => settingsPanel.style.display = "block";
 document.getElementById("closeSettings").onclick = () => {
     settingsPanel.style.display = "none";
@@ -246,17 +247,14 @@ document.getElementById("closeSettings").onclick = () => {
     maxNumber = numberRange.value;
 };
 
-/* Range update */
 numberRange.oninput = () => {
     rangeValue.textContent = numberRange.value;
 };
 
-/* Mode select */
 document.getElementById("kidMode").onclick = () => mode="kid";
 document.getElementById("aiMode").onclick = () => mode="ai";
 document.getElementById("proMode").onclick = () => mode="pro";
 
-/* Start game */
 setTimeout(() => {
     nextBtn.style.display = "block";
     openSettings.style.display = "block";
@@ -266,9 +264,9 @@ setTimeout(() => {
     }
 }, 1000);
 
-/* DRAW BUTTON */
+/* BUTTON */
 nextBtn.addEventListener("click", () => {
-    autoRefreshEnabled = false; // <<< BELANGRIJK: auto-refresh uitzetten
+    autoRefreshEnabled = false;
     if (mode === "kid" && cooldownActive) return;
 
     generateNumber();
@@ -284,7 +282,7 @@ nextBtn.addEventListener("click", () => {
 });
 
 /* MAIN NUMBER FUNCTION */
-function generateNumber() {
+async function generateNumber() {
     if (usedNumbers.length >= maxNumber) {
         alert("Alle nummers zijn geweest 🎉");
         return;
@@ -299,6 +297,10 @@ function generateNumber() {
     numberText.textContent = num;
     ball.style.transform = "translate(-50%, -50%) scale(1)";
 
+    /* --- SOUND EERST --- */
+    await playNotification();
+
+    /* --- DAN TTS OF NORMAL DISPLAY --- */
     if (ttsEnabled) speakNumber(num);
     else setTimeout(hideBall, 8000);
 }
