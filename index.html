@@ -185,7 +185,7 @@ button:hover {
 <button id="nextNumber">Volgende Nummer ➡️</button>
 
 <!-- Kleine rode versie nummer rechtsonder -->
-<div id="versionBadge">V1.5</div>
+<div id="versionBadge">V1.6</div>
 
 <script>
 /* --- VARIABLES --- */
@@ -305,7 +305,7 @@ function generateNumber() {
 
 /* SPEECH */
 function speakNumber(num) {
-    const msg = new SpeechSynthesisUtterance(`De volgende nummer is ${num}. Ik herhaal ${num}.`);
+    const msg = new SpeechSynthesisUtterance(`volgende nummer is ${num}. Ik herhaal ${num}.`);
     msg.voice = voices[voiceSelect.value];
 
     msg.onend = hideBall;
@@ -320,3 +320,4 @@ function hideBall() {
 
 </body>
 </html>
+
