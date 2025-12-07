@@ -252,12 +252,24 @@ setTimeout(()=>{
     if(mode==="ai") aiInterval=setInterval(generateNumber,10000);
 },1000);
 
+// === INTERACTIE VIA CLICK / TOETS (alleen als instellingen NIET open zijn) ===
 document.body.addEventListener("click", async(e)=>{
-    if(e.target.id!=="openSettings") await triggerNext();
+    // achtergrond klik/tap werkt alleen als het instellingen-paneel dicht is
+    if (settingsPanel.style.display === "none" && e.target.id !== "openSettings") {
+        await triggerNext();
+    }
 });
+
 document.body.addEventListener("keydown", async(e)=>{
-    if(e.code==="Space") { e.preventDefault(); await triggerNext(); }
+    if (e.code === "Space") {
+        e.preventDefault();
+        // ook met de spatiebalk: alleen als instellingen dicht zijn
+        if (settingsPanel.style.display === "none") {
+            await triggerNext();
+        }
+    }
 });
+
 
 async function triggerNext(){
     autoRefreshEnabled=false;
