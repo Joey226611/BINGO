@@ -11,18 +11,8 @@ let autoRefreshEnabled = true;
 
 window.addEventListener("load", () => {
     setTimeout(() => {
-        if (autoRefreshEnabled) {
-            location.reload();
-        }
+        if (autoRefreshEnabled) location.reload();
     }, 60000);
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.addEventListener("click", (e) => {
-        if (e.target && e.target.id === "nextNumber") {
-            autoRefreshEnabled = false;
-        }
-    });
 });
 </script>
 
@@ -37,10 +27,7 @@ body {
     text-align: center;
     overflow: hidden;
 }
-@keyframes bgMove {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100% 100%; }
-}
+@keyframes bgMove {0%{background-position:0% 0%;}100%{background-position:100% 100%;}}
 
 /* UI */
 #settingsPanel {
@@ -58,113 +45,22 @@ body {
     display: none;
     z-index: 9999;
 }
-
-.sliderValue {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-button {
-    margin-top: 15px;
-    font-size: 22px;
-    padding: 12px 25px;
-    border-radius: 15px;
-    background: #ff0000;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: .3s;
-}
-button:hover {
-    transform: scale(1.07);
-    background: #ff3b3b;
-}
-
-.modeBtn {
-    width: 90%;
-    margin-top: 10px;
-}
-
-#openSettings {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #ffd000;
-    color: black;
-    padding: 10px 20px;
-    border-radius: 15px;
-    z-index: 9000;
-    display: none;
-}
-
-/* ---- SWOOSH BALL ANIMATIE ---- */
-#ball {
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    width: 230px;
-    height: 230px;
-    transform: translate(-50%, -50%) scale(0);
-    background: radial-gradient(circle, white 50%, #d9d9d9 85%);
-    border: 8px solid #ff0000;
-    border-radius: 50%;
-    box-shadow: 0 0 25px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* SHOOWSH ANIMATIE (bal vliegt in je gezicht) */
+.sliderValue {font-size:22px;font-weight:bold;}
+button {margin-top:15px;font-size:22px;padding:12px 25px;border-radius:15px;background:#ff0000;color:white;border:none;cursor:pointer;transition:.3s;}
+button:hover {transform: scale(1.07); background:#ff3b3b;}
+.modeBtn {width:90%; margin-top:10px;}
+#openSettings {position:fixed; top:20px; right:20px; background:#ffd000;color:black;padding:10px 20px;border-radius:15px; z-index:9000; display:none;}
+#ball {position:absolute; top:55%; left:50%; width:230px; height:230px; transform:translate(-50%, -50%) scale(0); background:radial-gradient(circle, white 50%, #d9d9d9 85%); border:8px solid #ff0000; border-radius:50%; box-shadow:0 0 25px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4); display:flex; justify-content:center; align-items:center;}
 @keyframes swooshBall {
-    0% {
-        transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
-        filter: blur(25px);
-        opacity: 0.1;
-    }
-    40% {
-        transform: translate(-50%, -40%) scale(1.6) rotate(180deg);
-        filter: blur(8px);
-        opacity: 0.7;
-    }
-    75% {
-        transform: translate(-50%, -50%) scale(0.8) rotate(270deg);
-        filter: blur(3px);
-        opacity: 0.9;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(1) rotate(360deg);
-        filter: blur(0px);
-        opacity: 1;
-    }
+    0% {transform:translate(-50%,-50%) scale(0.2) rotate(0deg); filter:blur(25px); opacity:0.1;}
+    40% {transform:translate(-50%,-40%) scale(1.6) rotate(180deg); filter:blur(8px); opacity:0.7;}
+    75% {transform:translate(-50%,-50%) scale(0.8) rotate(270deg); filter:blur(3px); opacity:0.9;}
+    100% {transform:translate(-50%,-50%) scale(1) rotate(360deg); filter:blur(0px); opacity:1;}
 }
-
-.swooshActive {
-    animation: swooshBall 0.95s cubic-bezier(.18,.61,.53,1) forwards;
-}
-
-/* Nummer */
-#numberText {
-    font-size: 90px;
-    font-weight: bold;
-    color: #000;
-    transition: opacity .2s;
-}
-
-#nextNumber {
-    display: none;
-    margin-top: 50px;
-    font-size: 26px;
-}
-
-#versionBadge {
-    position: fixed;
-    bottom: 8px;
-    right: 8px;
-    color: #ff0000;
-    font-size: 12px;
-    font-weight: bold;
-    z-index: 10000;
-}
+.swooshActive {animation:swooshBall 0.95s cubic-bezier(.18,.61,.53,1) forwards;}
+#numberText {font-size:90px;font-weight:bold;color:#000; transition:opacity .2s;}
+#cooldownWarning {position:fixed; top:10%; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:12px 25px; border-radius:15px; font-size:22px; display:none; z-index:9999;}
+#versionBadge {position:fixed; bottom:8px; right:8px; color:#ff0000; font-size:12px; font-weight:bold; z-index:10000;}
 </style>
 </head>
 
@@ -176,46 +72,31 @@ button:hover {
 
 <div id="settingsPanel">
     <h2>Instellingen 🎄</h2>
-
     <label>Nummer limiet: <span id="rangeValue" class="sliderValue">75</span></label>
     <input type="range" min="10" max="100" value="75" id="numberRange">
-
     <h3>Gamemode:</h3>
     <button class="modeBtn" id="kidMode">👶 Kid Mode</button>
     <button class="modeBtn" id="aiMode">🤖 AI Mode</button>
     <button class="modeBtn" id="proMode">🔥 Pro Mode</button>
-
     <br><br>
-
-    <label>
-        Text-To-Speech:
-        <input type="checkbox" id="ttsToggle">
-    </label>
-
-    <label>
-        Stem Selecteren:
-        <select id="voiceSelect"></select>
-    </label>
-
+    <label>Text-To-Speech: <input type="checkbox" id="ttsToggle"></label>
+    <label>Stem Selecteren: <select id="voiceSelect"></select></label>
     <button id="closeSettings">Opslaan & Sluiten</button>
 </div>
 
-<div id="ball">
-    <span id="numberText"></span>
-</div>
-
-<button id="nextNumber">Volgende Nummer ➡️</button>
-
-<div id="versionBadge">V1.81</div>
+<div id="ball"><span id="numberText"></span></div>
+<div id="cooldownWarning"></div>
+<div id="versionBadge">V1.91</div>
 
 <script>
-let usedNumbers = [];  
-let voices = [];
-let mode = localStorage.getItem("mode") || "pro";
-let ttsEnabled = localStorage.getItem("tts") === "true";
-let maxNumber = Number(localStorage.getItem("max")) || 75;
-let cooldownActive = false;
-let aiInterval = null;
+let usedNumbers=[];
+let voices=[];
+let mode = localStorage.getItem("mode")||"pro";
+let ttsEnabled = localStorage.getItem("tts")==="true";
+let maxNumber = Number(localStorage.getItem("max"))||75;
+let cooldownActive=false;
+let aiInterval=null;
+let cooldownTime = 0;
 
 const synth = window.speechSynthesis;
 const ttsToggle = document.getElementById("ttsToggle");
@@ -223,145 +104,121 @@ const voiceSelect = document.getElementById("voiceSelect");
 const rangeValue = document.getElementById("rangeValue");
 const ball = document.getElementById("ball");
 const numberText = document.getElementById("numberText");
-const nextBtn = document.getElementById("nextNumber");
 const numberRange = document.getElementById("numberRange");
 const settingsPanel = document.getElementById("settingsPanel");
 const openSettings = document.getElementById("openSettings");
+const cooldownWarning = document.getElementById("cooldownWarning");
 
-numberRange.value = maxNumber;
-rangeValue.textContent = maxNumber;
-ttsToggle.checked = ttsEnabled;
+numberRange.value=maxNumber;
+rangeValue.textContent=maxNumber;
+ttsToggle.checked=ttsEnabled;
 
-/* ---- LOAD VOICES ---- */
 function loadVoices() {
-    voices = synth.getVoices();
-    voiceSelect.innerHTML = "";
-
-    voices.forEach((v, i) => {
-        let opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = v.name;
+    voices=synth.getVoices();
+    voiceSelect.innerHTML="";
+    voices.forEach((v,i)=>{
+        let opt=document.createElement("option");
+        opt.value=i; opt.textContent=v.name;
         voiceSelect.appendChild(opt);
     });
-
-    if (localStorage.getItem("voiceIndex")) {
-        voiceSelect.value = localStorage.getItem("voiceIndex");
-    }
+    if(localStorage.getItem("voiceIndex")) voiceSelect.value=localStorage.getItem("voiceIndex");
 }
 loadVoices();
-speechSynthesis.onvoiceschanged = loadVoices;
+speechSynthesis.onvoiceschanged=loadVoices;
 
-/* ---- NIEUWE SFX ANIMATIE ---- */
-function playNotification() {
-    return new Promise(resolve => {
+openSettings.onclick=()=>settingsPanel.style.display="block";
+document.getElementById("closeSettings").onclick=()=>{
+    settingsPanel.style.display="none";
+    localStorage.setItem("tts",ttsToggle.checked);
+    localStorage.setItem("voiceIndex",voiceSelect.value);
+    localStorage.setItem("max",numberRange.value);
+    localStorage.setItem("mode",mode);
+    maxNumber=numberRange.value;
+};
+numberRange.oninput=()=>rangeValue.textContent=numberRange.value;
+document.getElementById("kidMode").onclick=()=>mode="kid";
+document.getElementById("aiMode").onclick=()=>mode="ai";
+document.getElementById("proMode").onclick=()=>mode="pro";
 
-        // Start nieuwe swoosh animatie
+setTimeout(()=>{
+    openSettings.style.display="block";
+    if(mode==="ai") aiInterval=setInterval(generateNumber,10000);
+},1000);
+
+/* ---- BACKGROUND & SPATIE CLICK ---- */
+document.body.addEventListener("click", async(e)=>{
+    if(e.target.id!=="openSettings") await triggerNext();
+});
+document.body.addEventListener("keydown", async(e)=>{
+    if(e.code==="Space") { e.preventDefault(); await triggerNext(); }
+});
+
+/* ---- GENERATE NUMBER FUNCTION ---- */
+async function triggerNext(){
+    autoRefreshEnabled=false;
+    let kidCooldown = mode==="kid"?15:5;
+    if(cooldownActive){
+        showCooldownWarning();
+        return;
+    }
+    cooldownActive=true;
+    cooldownTime=kidCooldown;
+    updateCooldownInterval();
+    await generateNumber();
+}
+
+function showCooldownWarning(){
+    cooldownWarning.textContent=`U moet nog ${cooldownTime} seconden wachten tot u weer mag drukken.`;
+    cooldownWarning.style.display="block";
+    setTimeout(()=>{ cooldownWarning.style.display="none"; },5000);
+}
+function updateCooldownInterval(){
+    let interval=setInterval(()=>{
+        cooldownTime--;
+        if(cooldownTime<=0){cooldownActive=false; clearInterval(interval);}
+    },1000);
+}
+
+/* ---- NUMBER GENERATION ---- */
+async function generateNumber(){
+    if(usedNumbers.length>=maxNumber){ alert("Alle nummers zijn geweest 🎉"); return; }
+    let num;
+    do{ num=Math.floor(Math.random()*maxNumber)+1; } while(usedNumbers.includes(num));
+    usedNumbers.push(num);
+    numberText.textContent=num;
+    ball.classList.remove("swooshActive");
+    ball.style.transform="translate(-50%,-50%) scale(1)";
+    await playNotification();
+    if(ttsEnabled) speakNumber(num); else setTimeout(hideBall,8000);
+}
+
+/* ---- SOUND + SWOOSH ---- */
+function playNotification(){
+    return new Promise(resolve=>{
         ball.classList.add("swooshActive");
-
-        // Nummer bijna onzichtbaar tijdens animatie
-        numberText.style.opacity = "0.1";
-
-        let audio = new Audio("./Sounds/Noti.mp3");
-        audio.volume = 1.0;
-
-        audio.onended = () => {
-            numberText.style.opacity = "1";
+        numberText.style.opacity="0.1";
+        let audio=new Audio("./Sounds/Noti.mp3");
+        audio.volume=1.0;
+        audio.onended=()=>{
+            numberText.style.opacity="1";
             resolve();
         };
-
         audio.play();
     });
 }
 
-/* ---- SETTINGS ---- */
-openSettings.onclick = () => settingsPanel.style.display = "block";
-document.getElementById("closeSettings").onclick = () => {
-    settingsPanel.style.display = "none";
-
-    localStorage.setItem("tts", ttsToggle.checked);
-    localStorage.setItem("voiceIndex", voiceSelect.value);
-    localStorage.setItem("max", numberRange.value);
-    localStorage.setItem("mode", mode);
-
-    maxNumber = numberRange.value;
-};
-
-numberRange.oninput = () => {
-    rangeValue.textContent = numberRange.value;
-};
-
-document.getElementById("kidMode").onclick = () => mode="kid";
-document.getElementById("aiMode").onclick = () => mode="ai";
-document.getElementById("proMode").onclick = () => mode="pro";
-
-setTimeout(() => {
-    nextBtn.style.display = "block";
-    openSettings.style.display = "block";
-
-    if (mode === "ai") {
-        aiInterval = setInterval(generateNumber, 10000);
-    }
-}, 1000);
-
-/* ---- BUTTON ---- */
-nextBtn.addEventListener("click", async () => {
-    autoRefreshEnabled = false;
-
-    if (mode === "kid" && cooldownActive) return;
-
-    await generateNumber();
-
-    if (mode === "kid") {
-        cooldownActive = true;
-        nextBtn.style.opacity = 0.4;
-        setTimeout(() => {
-            cooldownActive = false;
-            nextBtn.style.opacity = 1;
-        }, 10000);
-    }
-});
-
-/* ---- NUMBER LOGIC ---- */
-async function generateNumber() {
-
-    if (usedNumbers.length >= maxNumber) {
-        alert("Alle nummers zijn geweest 🎉");
-        return;
-    }
-
-    let num;
-    do { num = Math.floor(Math.random() * maxNumber) + 1; }
-    while (usedNumbers.includes(num));
-
-    usedNumbers.push(num);
-
-    numberText.textContent = num;
-    ball.classList.remove("swooshActive");
-    ball.style.transform = "translate(-50%, -50%) scale(1)";
-
-    await playNotification();
-
-    if (ttsEnabled) speakNumber(num);
-    else setTimeout(hideBall, 8000);
-}
-
 /* ---- TTS ---- */
-function speakNumber(num) {
-
+function speakNumber(num){
     ball.classList.remove("swooshActive");
-    numberText.style.opacity = "1";
-
-    const msg = new SpeechSynthesisUtterance(`volgende nummer is ${num}. Ik herhaal ${num}.`);
-    msg.voice = voices[voiceSelect.value];
-
-    msg.onend = hideBall;
+    numberText.style.opacity="1";
+    const msg=new SpeechSynthesisUtterance(`volgende nummer is ${num}. Ik herhaal ${num}.`);
+    msg.voice=voices[voiceSelect.value];
+    msg.onend=hideBall;
     synth.speak(msg);
 }
 
-/* ---- HIDE ---- */
-function hideBall() {
-    ball.style.transform = "translate(-50%, -50%) scale(0)";
-}
+/* ---- HIDE BALL ---- */
+function hideBall(){ ball.style.transform="translate(-50%,-50%) scale(0)"; }
 </script>
 
 </body>
