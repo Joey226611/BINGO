@@ -17,50 +17,156 @@ window.addEventListener("load", () => {
 </script>
 
 <style>
+/* ====== GLOBAL LAYOUT ====== */
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(130deg, #145214, #1e1e1e, #8b0000);
-    background-size: 400% 400%;
-    animation: bgMove 12s infinite alternate;
-    color: white;
-    text-align: center;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(145deg, #0f0f0f, #2b0000 40%, #145214 90%);
+    background-size: 250% 250%;
+    animation: bgFlow 16s ease infinite;
+    color: #fff;
     overflow: hidden;
 }
-@keyframes bgMove {0%{background-position:0% 0%;}100%{background-position:100% 100%;}}
 
-/* UI */
+/* Modern background animation */
+@keyframes bgFlow {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 0%; }
+}
+
+/* Title styling */
+h1 {
+    margin-top: 25px;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 0 4px 14px rgba(255,0,0,0.4);
+}
+
+/* ====== SETTINGS BUTTON ====== */
+#openSettings {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ffe164;
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 20px;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: .2s;
+    display: none;
+}
+#openSettings:hover {
+    transform: scale(1.06);
+    background: #ffea85;
+}
+
+/* ====== MODERN SETTINGS PANEL ====== */
 #settingsPanel {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 85%;
-    max-width: 500px;
+    width: 90%;
+    max-width: 520px;
     transform: translate(-50%, -50%);
-    background: rgba(255,255,255,0.15);
-    padding: 20px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 25px rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.12);
+    padding: 25px;
+    border-radius: 30px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.2);
     display: none;
-    z-index: 9999;
+    box-shadow: 0 0 40px rgba(255,255,255,0.25);
+    animation: panelPop .4s ease;
 }
-.sliderValue {font-size:22px;font-weight:bold;}
-button {margin-top:15px;font-size:22px;padding:12px 25px;border-radius:15px;background:#ff0000;color:white;border:none;cursor:pointer;transition:.3s;}
-button:hover {transform: scale(1.07); background:#ff3b3b;}
-.modeBtn {width:90%; margin-top:10px;}
-#openSettings {position:fixed; top:20px; right:20px; background:#ffd000;color:black;padding:10px 20px;border-radius:15px; z-index:9000; display:none;}
-#ball {position:absolute; top:55%; left:50%; width:230px; height:230px; transform:translate(-50%, -50%) scale(0); background:radial-gradient(circle, white 50%, #d9d9d9 85%); border:8px solid #ff0000; border-radius:50%; box-shadow:0 0 25px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4); display:flex; justify-content:center; align-items:center;}
+@keyframes panelPop {
+    from { transform: translate(-50%, -40%) scale(0.7); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* Buttons inside panel */
+.modeBtn, #closeSettings {
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px;
+    font-size: 20px;
+    border-radius: 18px;
+    border: none;
+    cursor: pointer;
+    background: #ff4a4a;
+    transition: .2s;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+.modeBtn:hover, #closeSettings:hover {
+    transform: scale(1.05);
+    background: #ff6b6b;
+}
+
+.sliderValue {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* ====== THE BIG BALL ====== */
+#ball {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    width: 260px;
+    height: 260px;
+    transform: translate(-50%, -50%) scale(0);
+    background: radial-gradient(circle, #ffffff 45%, #d8d8d8 80%);
+    border: 10px solid #ff0000;
+    border-radius: 50%;
+    box-shadow: 0 0 35px rgba(255,0,0,0.8), inset 0 0 25px rgba(0,0,0,0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Animated swoosh */
 @keyframes swooshBall {
-    0% {transform:translate(-50%,-50%) scale(0.2) rotate(0deg); filter:blur(25px); opacity:0.1;}
-    40% {transform:translate(-50%,-40%) scale(1.6) rotate(180deg); filter:blur(8px); opacity:0.7;}
-    75% {transform:translate(-50%,-50%) scale(0.8) rotate(270deg); filter:blur(3px); opacity:0.9;}
-    100% {transform:translate(-50%,-50%) scale(1) rotate(360deg); filter:blur(0px); opacity:1;}
+    0% { transform: translate(-50%,-50%) scale(0.2); opacity:0.2; filter: blur(20px); }
+    45% { transform: translate(-50%,-42%) scale(1.5); opacity:0.8; }
+    75% { transform: translate(-50%,-50%) scale(0.9); opacity:1; filter: blur(4px); }
+    100% { transform: translate(-50%,-50%) scale(1); opacity:1; filter:none; }
 }
-.swooshActive {animation:swooshBall 0.95s cubic-bezier(.18,.61,.53,1) forwards;}
-#numberText {font-size:90px;font-weight:bold;color:#000; transition:opacity .2s;}
-#cooldownWarning {position:fixed; top:10%; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:12px 25px; border-radius:15px; font-size:22px; display:none; z-index:9999;}
-#versionBadge {position:fixed; bottom:8px; right:8px; color:#ff0000; font-size:12px; font-weight:bold; z-index:10000;}
+.swooshActive { animation: swooshBall .95s cubic-bezier(.18,.61,.53,1) forwards; }
+
+#numberText {
+    font-size: 100px;
+    font-weight: 900;
+    color: #000;
+}
+
+/* ====== COOLDOWN MESSAGE ====== */
+#cooldownWarning {
+    position: fixed;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.55);
+    padding: 16px 28px;
+    border-radius: 15px;
+    font-size: 22px;
+    display: none;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+/* Version badge */
+#versionBadge {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #ff0000;
+    opacity: 0.9;
+}
 </style>
 </head>
 
@@ -89,6 +195,7 @@ button:hover {transform: scale(1.07); background:#ff3b3b;}
 <div id="versionBadge">V1.91</div>
 
 <script>
+/* ----- ORIGINAL SCRIPT (NIETS AANGEPAST) ----- */
 let usedNumbers=[];
 let voices=[];
 let mode = localStorage.getItem("mode")||"pro";
@@ -145,7 +252,6 @@ setTimeout(()=>{
     if(mode==="ai") aiInterval=setInterval(generateNumber,10000);
 },1000);
 
-/* ---- BACKGROUND & SPATIE CLICK ---- */
 document.body.addEventListener("click", async(e)=>{
     if(e.target.id!=="openSettings") await triggerNext();
 });
@@ -153,7 +259,6 @@ document.body.addEventListener("keydown", async(e)=>{
     if(e.code==="Space") { e.preventDefault(); await triggerNext(); }
 });
 
-/* ---- GENERATE NUMBER FUNCTION ---- */
 async function triggerNext(){
     autoRefreshEnabled=false;
     let kidCooldown = mode==="kid"?15:5;
@@ -179,7 +284,6 @@ function updateCooldownInterval(){
     },1000);
 }
 
-/* ---- NUMBER GENERATION ---- */
 async function generateNumber(){
     if(usedNumbers.length>=maxNumber){ alert("Alle nummers zijn geweest 🎉"); return; }
     let num;
@@ -192,7 +296,6 @@ async function generateNumber(){
     if(ttsEnabled) speakNumber(num); else setTimeout(hideBall,8000);
 }
 
-/* ---- SOUND + SWOOSH ---- */
 function playNotification(){
     return new Promise(resolve=>{
         ball.classList.add("swooshActive");
@@ -207,7 +310,6 @@ function playNotification(){
     });
 }
 
-/* ---- TTS ---- */
 function speakNumber(num){
     ball.classList.remove("swooshActive");
     numberText.style.opacity="1";
@@ -217,7 +319,6 @@ function speakNumber(num){
     synth.speak(msg);
 }
 
-/* ---- HIDE BALL ---- */
 function hideBall(){ ball.style.transform="translate(-50%,-50%) scale(0)"; }
 </script>
 
