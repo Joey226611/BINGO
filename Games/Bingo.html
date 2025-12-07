@@ -97,59 +97,57 @@ button:hover {
     display: none;
 }
 
-/* THE NEW SUPER BALL */
+/* ---- SWOOSH BALL ANIMATIE ---- */
 #ball {
     position: absolute;
     top: 55%;
     left: 50%;
-    width: 220px;
-    height: 220px;
+    width: 230px;
+    height: 230px;
     transform: translate(-50%, -50%) scale(0);
     background: radial-gradient(circle, white 50%, #d9d9d9 85%);
     border: 8px solid #ff0000;
     border-radius: 50%;
     box-shadow: 0 0 25px rgba(255,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.4);
-    transition: .4s ease-out;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* SPECTACULAIRE ANIMATIE TIJDENS SOUND */
-@keyframes megaSpin {
+/* SHOOWSH ANIMATIE (bal vliegt in je gezicht) */
+@keyframes swooshBall {
     0% {
-        transform: translate(-50%, -50%) scale(1) rotate(0deg);
-        filter: blur(0px);
+        transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
+        filter: blur(25px);
+        opacity: 0.1;
     }
-    25% {
-        transform: translate(-50%, -50%) scale(1.16) rotate(180deg);
-        filter: blur(3px);
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(0.88) rotate(360deg);
-        filter: blur(5px);
+    40% {
+        transform: translate(-50%, -40%) scale(1.6) rotate(180deg);
+        filter: blur(8px);
+        opacity: 0.7;
     }
     75% {
-        transform: translate(-50%, -50%) scale(1.22) rotate(540deg);
+        transform: translate(-50%, -50%) scale(0.8) rotate(270deg);
         filter: blur(3px);
+        opacity: 0.9;
     }
     100% {
-        transform: translate(-50%, -50%) scale(1) rotate(720deg);
+        transform: translate(-50%, -50%) scale(1) rotate(360deg);
         filter: blur(0px);
+        opacity: 1;
     }
 }
 
-.spinActive {
-    animation: megaSpin 1.15s ease-in-out infinite;
-    filter: blur(4px) brightness(1.35);
-    text-shadow: 0 0 20px rgba(255,255,255,0.9);
-    opacity: 1;
+.swooshActive {
+    animation: swooshBall 0.95s cubic-bezier(.18,.61,.53,1) forwards;
 }
 
+/* Nummer */
 #numberText {
     font-size: 90px;
     font-weight: bold;
     color: #000;
+    transition: opacity .2s;
 }
 
 #nextNumber {
@@ -166,8 +164,6 @@ button:hover {
     font-size: 12px;
     font-weight: bold;
     z-index: 10000;
-    background: transparent;
-    pointer-events: none;
 }
 </style>
 </head>
@@ -210,7 +206,7 @@ button:hover {
 
 <button id="nextNumber">Volgende Nummer ➡️</button>
 
-<div id="versionBadge">V1.80</div>
+<div id="versionBadge">V1.81</div>
 
 <script>
 let usedNumbers = [];  
@@ -255,27 +251,27 @@ function loadVoices() {
 loadVoices();
 speechSynthesis.onvoiceschanged = loadVoices;
 
-
-/* ---- SUPER ANIMATIE + SOUND ---- */
+/* ---- NIEUWE SFX ANIMATIE ---- */
 function playNotification() {
     return new Promise(resolve => {
 
-        // Bal begint met de mega spin animatie
-        ball.classList.add("spinActive");
+        // Start nieuwe swoosh animatie
+        ball.classList.add("swooshActive");
+
+        // Nummer bijna onzichtbaar tijdens animatie
+        numberText.style.opacity = "0.1";
 
         let audio = new Audio("./Sounds/Noti.mp3");
         audio.volume = 1.0;
 
         audio.onended = () => {
-            ball.classList.remove("spinActive");  
-            ball.style.filter = "blur(0px)";
+            numberText.style.opacity = "1";
             resolve();
         };
 
         audio.play();
     });
 }
-
 
 /* ---- SETTINGS ---- */
 openSettings.onclick = () => settingsPanel.style.display = "block";
@@ -307,7 +303,6 @@ setTimeout(() => {
     }
 }, 1000);
 
-
 /* ---- BUTTON ---- */
 nextBtn.addEventListener("click", async () => {
     autoRefreshEnabled = false;
@@ -326,7 +321,6 @@ nextBtn.addEventListener("click", async () => {
     }
 });
 
-
 /* ---- NUMBER LOGIC ---- */
 async function generateNumber() {
 
@@ -342,6 +336,7 @@ async function generateNumber() {
     usedNumbers.push(num);
 
     numberText.textContent = num;
+    ball.classList.remove("swooshActive");
     ball.style.transform = "translate(-50%, -50%) scale(1)";
 
     await playNotification();
@@ -350,13 +345,11 @@ async function generateNumber() {
     else setTimeout(hideBall, 8000);
 }
 
-
 /* ---- TTS ---- */
 function speakNumber(num) {
 
-    // Stop animatie zodra TTS start
-    ball.classList.remove("spinActive");
-    ball.style.filter = "blur(0px)";
+    ball.classList.remove("swooshActive");
+    numberText.style.opacity = "1";
 
     const msg = new SpeechSynthesisUtterance(`volgende nummer is ${num}. Ik herhaal ${num}.`);
     msg.voice = voices[voiceSelect.value];
@@ -364,7 +357,6 @@ function speakNumber(num) {
     msg.onend = hideBall;
     synth.speak(msg);
 }
-
 
 /* ---- HIDE ---- */
 function hideBall() {
