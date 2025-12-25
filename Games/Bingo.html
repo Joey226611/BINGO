@@ -244,7 +244,10 @@ function generateNumber(){
     const audio=new Audio("./Sounds/Noti.mp3");
     audio.onended=()=>{
         if(ttsEnabled){
-            const u=new SpeechSynthesisUtterance(num.toString());
+         const u = new SpeechSynthesisUtterance(
+    `Volgende nummer. ${num}. Ik herhaal. ${num}.`
+);
+
             const vi=localStorage.getItem("voiceIndex");
             if(voices[vi]) u.voice=voices[vi];
             synth.speak(u);
