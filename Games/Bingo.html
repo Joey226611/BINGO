@@ -176,6 +176,32 @@ function applyNextNeonColor(){
     neonIndex = (neonIndex + 1) % neonColors.length;
 }
 
+function speakNumber(num){
+    const u = new SpeechSynthesisUtterance(
+        `Volgende nummer. ${num}. Ik herhaal. ${num}.`
+    );
+
+    // gekozen stem
+    if (voices.length && localStorage.getItem("voiceIndex")) {
+        u.voice = voices[localStorage.getItem("voiceIndex")];
+    }
+
+    // 🟢 TTS START → nummer zichtbaar
+    u.onstart = () => {
+        numberText.textContent = num;
+        ball.style.transform = "translate(-50%,-50%) scale(1)";
+    };
+
+    // 🔴 TTS KLAAR → bal verdwijnt
+    u.onend = () => {
+        setTimeout(() => {
+            ball.style.transform = "translate(-50%,-50%) scale(0)";
+        }, 500);
+    };
+
+    synth.speak(u);
+}
+
 /* KEYBOARD */
 document.addEventListener("keydown", e=>{
     if(e.code==="Space"){
@@ -222,40 +248,45 @@ async function triggerNext(){
     generateNumber();
 }
 
-function generateNumber(){
-    if(usedNumbers.length>=maxNumber){
+async function generateNumber(){
+    if(usedNumbers.length >= maxNumber){
         alert("Alle nummers zijn geweest 🎉");
         return;
     }
+
     let num;
-    do{
-        num=Math.floor(Math.random()*maxNumber)+1;
-    }while(usedNumbers.includes(num));
+    do {
+        num = Math.floor(Math.random() * maxNumber) + 1;
+    } while (usedNumbers.includes(num));
 
     usedNumbers.push(num);
-    numberText.textContent=num;
 
     applyNextNeonColor();
+
     ball.classList.remove("swooshActive");
     ball.offsetHeight;
     ball.classList.add("swooshActive");
-    ball.style.transform="translate(-50%,-50%) scale(1)";
 
-    const audio=new Audio("./Sounds/Noti.mp3");
-    audio.onended=()=>{
-        if(ttsEnabled){
-         const u = new SpeechSynthesisUtterance(
-    `Volgende nummer. ${num}. Ik herhaal. ${num}.`
-);
+    let audio = new Audio("./Sounds/Noti.mp3");
+    audio.volume = 1.0;
 
-            const vi=localStorage.getItem("voiceIndex");
-            if(voices[vi]) u.voice=voices[vi];
-            synth.speak(u);
+    audio.onended = () => {
+        if (ttsEnabled) {
+            // 🎤 TTS bepaalt timing
+            speakNumber(num);
+        } else {
+            // 🔇 zonder TTS → oud gedrag
+            numberText.textContent = num;
+            ball.style.transform = "translate(-50%,-50%) scale(1)";
+            setTimeout(() => {
+                ball.style.transform = "translate(-50%,-50%) scale(0)";
+            }, 8000);
         }
-        setTimeout(()=>ball.style.transform="translate(-50%,-50%) scale(0)",8000);
     };
+
     audio.play();
 }
+
 </script>
 
 </body>
