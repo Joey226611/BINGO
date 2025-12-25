@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kerst Bingo 🎄</title>
 
-<!-- AUTO REFRESH SCRIPT -->
 <script>
 let autoRefreshEnabled = true;
 window.addEventListener("load", () => {
@@ -25,13 +24,11 @@ body {
     color: #fff;
     overflow: hidden;
 }
-
 @keyframes bgFlow {
     0% { background-position: 0% 0%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 0%; }
 }
-
 h1 {
     margin-top: 25px;
     font-size: 42px;
@@ -39,6 +36,7 @@ h1 {
     text-shadow: 0 4px 14px rgba(255,0,0,0.4);
 }
 
+/* BIG BALL V2.4 */
 #ball {
     position: absolute;
     top: 55%;
@@ -54,7 +52,6 @@ h1 {
     justify-content: center;
     align-items: center;
 }
-
 @keyframes swooshBall {
     0% { transform: translate(-50%,-50%) scale(0.2); opacity:0.2; filter: blur(20px); }
     45% { transform: translate(-50%,-42%) scale(1.4); opacity:0.8; }
@@ -64,13 +61,11 @@ h1 {
 .swooshActive {
     animation: swooshBall .95s cubic-bezier(.18,.61,.53,1) forwards;
 }
-
 #numberText {
     font-size: 160px;
     font-weight: 900;
     color: #000;
 }
-
 #versionBadge {
     position: fixed;
     bottom: 10px;
@@ -79,39 +74,19 @@ h1 {
     font-weight: bold;
     color: #00ff00;
 }
-
-/* SETTINGS PANEL */
-#settingsPanel{
+#settingsPanel {
     display:none;
     position:fixed;
-    top:90px;
+    top:80px;
     left:50%;
     transform:translateX(-50%);
     background:#111;
-    padding:25px;
-    border-radius:16px;
+    padding:20px;
     border:2px solid red;
-    box-shadow:0 0 30px red;
     z-index:9999;
-    width:320px;
-}
-#settingsPanel h2{margin-top:0;color:#0f0;}
-#settingsPanel input,#settingsPanel select{
-    width:100%;
-    margin-top:5px;
-    padding:6px;
-}
-#settingsPanel button{
-    width:100%;
-    padding:10px;
-    margin-top:15px;
-    background:red;
-    border:none;
     color:white;
-    font-weight:bold;
-    border-radius:10px;
-    cursor:pointer;
 }
+input[type=range] { width:100%; }
 </style>
 </head>
 
@@ -120,28 +95,12 @@ h1 {
 <h1>🎅 Kerst Muziek Bingo 🎄</h1>
 
 <div id="settingsPanel">
-<h2>⚙️ Instellingen</h2>
+<h2>Instellingen 🎄</h2>
+<label>Nummer limiet: <span id="rangeValue">75</span></label>
+<input type="range" min="10" max="100" value="75" id="numberRange"><br><br>
 
-<label>
-Max nummers:
-<input id="maxInput" type="number" min="1" max="100">
-</label>
-
-<br><br>
-
-<label>
-<input id="ttsToggle" type="checkbox">
- Text To Speech
-</label>
-
-<br><br>
-
-<label>
-Stem:
-<select id="voiceSelect"></select>
-</label>
-
-<button onclick="saveSettings()">Opslaan</button>
+<label>Text-To-Speech: <input type="checkbox" id="ttsToggle"></label><br>
+<label>Stem selecteren: <select id="voiceSelect"></select></label>
 </div>
 
 <div id="ball"><span id="numberText"></span></div>
@@ -150,23 +109,21 @@ Stem:
 <script>
 let usedNumbers=[];
 let voices=[];
-let ttsEnabled = localStorage.getItem("tts")==="true";
 let maxNumber = Number(localStorage.getItem("max"))||75;
 let cooldownActive=false;
+let ttsEnabled = localStorage.getItem("tts")==="true";
+let mode = localStorage.getItem("mode")||"pro";
 
 const synth = window.speechSynthesis;
 const ball = document.getElementById("ball");
 const numberText = document.getElementById("numberText");
 const settingsPanel = document.getElementById("settingsPanel");
-
-const maxInput = document.getElementById("maxInput");
 const ttsToggle = document.getElementById("ttsToggle");
 const voiceSelect = document.getElementById("voiceSelect");
+const numberRange = document.getElementById("numberRange");
+const rangeValue = document.getElementById("rangeValue");
 
-maxInput.value = maxNumber;
-ttsToggle.checked = ttsEnabled;
-
-/* NEON */
+/* Neon kleuren */
 const neonColors = ["green","red","blue","yellow"];
 let neonIndex = 0;
 function applyNextNeonColor(){
@@ -176,117 +133,85 @@ function applyNextNeonColor(){
     neonIndex = (neonIndex + 1) % neonColors.length;
 }
 
-function speakNumber(num){
-    const u = new SpeechSynthesisUtterance(
-        `Volgende nummer. ${num}. Ik herhaal. ${num}.`
-    );
+/* Range & TTS settings */
+numberRange.value=maxNumber;
+rangeValue.textContent=maxNumber;
+ttsToggle.checked=ttsEnabled;
 
-    // gekozen stem
-    if (voices.length && localStorage.getItem("voiceIndex")) {
-        u.voice = voices[localStorage.getItem("voiceIndex")];
-    }
+numberRange.oninput=()=>{ rangeValue.textContent=numberRange.value; maxNumber=Number(numberRange.value); localStorage.setItem("max",maxNumber);}
+ttsToggle.onchange=()=>{ ttsEnabled=ttsToggle.checked; localStorage.setItem("tts",ttsEnabled); }
 
-    // 🟢 TTS START → nummer zichtbaar
-    u.onstart = () => {
-        numberText.textContent = num;
-        ball.style.transform = "translate(-50%,-50%) scale(1)";
-    };
-
-    // 🔴 TTS KLAAR → bal verdwijnt
-    u.onend = () => {
-        setTimeout(() => {
-            ball.style.transform = "translate(-50%,-50%) scale(0)";
-        }, 500);
-    };
-
-    synth.speak(u);
+function loadVoices(){
+    voices = synth.getVoices();
+    voiceSelect.innerHTML="";
+    voices.forEach((v,i)=>{
+        let opt = document.createElement("option");
+        opt.value=i; opt.textContent=v.name;
+        voiceSelect.appendChild(opt);
+    });
+    if(localStorage.getItem("voiceIndex")) voiceSelect.value=localStorage.getItem("voiceIndex");
 }
+loadVoices();
+speechSynthesis.onvoiceschanged=loadVoices;
+voiceSelect.onchange=()=>localStorage.setItem("voiceIndex",voiceSelect.value);
 
-/* KEYBOARD */
-document.addEventListener("keydown", e=>{
+/* Key controls */
+document.body.addEventListener("keydown", e=>{
     if(e.code==="Space"){
         e.preventDefault();
         triggerNext();
     }
     if(e.ctrlKey && e.key==="1"){
         e.preventDefault();
-        settingsPanel.style.display =
-            settingsPanel.style.display==="block"?"none":"block";
+        settingsPanel.style.display = settingsPanel.style.display==="block"?"none":"block";
     }
 });
 
-/* VOICES */
-function loadVoices(){
-    voices = synth.getVoices();
-    voiceSelect.innerHTML="";
-    voices.forEach((v,i)=>{
-        const o=document.createElement("option");
-        o.value=i;
-        o.textContent=`${v.name} (${v.lang})`;
-        voiceSelect.appendChild(o);
-    });
-    const saved=localStorage.getItem("voiceIndex");
-    if(saved!==null) voiceSelect.value=saved;
-}
-loadVoices();
-speechSynthesis.onvoiceschanged = loadVoices;
-
-function saveSettings(){
-    maxNumber = Number(maxInput.value);
-    ttsEnabled = ttsToggle.checked;
-    localStorage.setItem("max",maxNumber);
-    localStorage.setItem("tts",ttsEnabled);
-    localStorage.setItem("voiceIndex",voiceSelect.value);
-    settingsPanel.style.display="none";
-}
-
 async function triggerNext(){
-    autoRefreshEnabled=false;
     if(cooldownActive) return;
     cooldownActive=true;
+    ball.style.transform="translate(-50%,-50%) scale(1)";
+    numberText.textContent=""; // leeg maken voor TTS
     setTimeout(()=>cooldownActive=false,5000);
-    generateNumber();
+    await generateNumber();
 }
 
 async function generateNumber(){
-    if(usedNumbers.length >= maxNumber){
+    if(usedNumbers.length>=maxNumber){
         alert("Alle nummers zijn geweest 🎉");
         return;
     }
 
     let num;
-    do {
-        num = Math.floor(Math.random() * maxNumber) + 1;
-    } while (usedNumbers.includes(num));
+    do{
+        num=Math.floor(Math.random()*maxNumber)+1;
+    }while(usedNumbers.includes(num));
 
     usedNumbers.push(num);
 
     applyNextNeonColor();
-
     ball.classList.remove("swooshActive");
-    ball.offsetHeight;
+    void ball.offsetHeight;
     ball.classList.add("swooshActive");
 
-    let audio = new Audio("./Sounds/Noti.mp3");
-    audio.volume = 1.0;
-
-    audio.onended = () => {
-        if (ttsEnabled) {
-            // 🎤 TTS bepaalt timing
-            speakNumber(num);
-        } else {
-            // 🔇 zonder TTS → oud gedrag
-            numberText.textContent = num;
-            ball.style.transform = "translate(-50%,-50%) scale(1)";
-            setTimeout(() => {
-                ball.style.transform = "translate(-50%,-50%) scale(0)";
-            }, 8000);
-        }
-    };
-
-    audio.play();
+    if(ttsEnabled){
+        const msg = new SpeechSynthesisUtterance(`Volgende nummer. ${num}. Ik herhaal. ${num}.`);
+        msg.voice = voices[voiceSelect.value];
+        numberText.textContent = num; // nummer tonen wanneer TTS start
+        msg.onend = ()=>{ ball.style.transform="translate(-50%,-50%) scale(0)"; };
+        synth.speak(msg);
+        // geluids effect tegelijk
+        const audio=new Audio("./Sounds/Noti.mp3");
+        audio.volume=1.0;
+        audio.play();
+    } else {
+        numberText.textContent = num;
+        const audio=new Audio("./Sounds/Noti.mp3");
+        audio.volume=1.0;
+        audio.onended=()=>{ setTimeout(()=>ball.style.transform="translate(-50%,-50%) scale(0)",8000); };
+        audio.play();
+    }
 }
-
 </script>
 
 </body>
