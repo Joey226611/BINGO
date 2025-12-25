@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kerst Bingo 🎄</title>
 
+<!-- AUTO REFRESH SCRIPT -->
 <script>
 let autoRefreshEnabled = true;
+
 window.addEventListener("load", () => {
     setTimeout(() => {
         if (autoRefreshEnabled) location.reload();
@@ -15,6 +17,7 @@ window.addEventListener("load", () => {
 </script>
 
 <style>
+/* ====== GLOBAL LAYOUT ====== */
 body {
     margin: 0;
     font-family: "Segoe UI", Arial, sans-serif;
@@ -24,69 +27,146 @@ body {
     color: #fff;
     overflow: hidden;
 }
+
+/* Modern background animation */
 @keyframes bgFlow {
     0% { background-position: 0% 0%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 0%; }
 }
+
+/* Title styling */
 h1 {
     margin-top: 25px;
     font-size: 42px;
     font-weight: 800;
+    letter-spacing: 1px;
     text-shadow: 0 4px 14px rgba(255,0,0,0.4);
 }
 
-/* BIG BALL V2.4 */
+/* ====== SETTINGS BUTTON ====== */
+#openSettings {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ffe164;
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 20px;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: .2s;
+    display: none;
+}
+#openSettings:hover {
+    transform: scale(1.06);
+    background: #ffea85;
+}
+
+/* ====== MODERN SETTINGS PANEL ====== */
+#settingsPanel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    max-width: 520px;
+    transform: translate(-50%, -50%);
+    background: rgba(255,255,255,0.12);
+    padding: 25px;
+    border-radius: 30px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: none;
+    box-shadow: 0 0 40px rgba(255,255,255,0.25);
+    animation: panelPop .4s ease;
+}
+@keyframes panelPop {
+    from { transform: translate(-50%, -40%) scale(0.7); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* Buttons inside panel */
+.modeBtn, #closeSettings {
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px;
+    font-size: 20px;
+    border-radius: 18px;
+    border: none;
+    cursor: pointer;
+    background: #ff4a4a;
+    transition: .2s;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+.modeBtn:hover, #closeSettings:hover {
+    transform: scale(1.05);
+    background: #ff6b6b;
+}
+
+.sliderValue {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* ====== THE BIG BALL ====== */
 #ball {
     position: absolute;
     top: 55%;
     left: 50%;
-    width: 420px;
-    height: 420px;
+    width: 260px;
+    height: 260px;
     transform: translate(-50%, -50%) scale(0);
     background: radial-gradient(circle, #ffffff 45%, #d8d8d8 80%);
-    border: 14px solid red;
+    border: 10px solid #ff0000;
     border-radius: 50%;
-    box-shadow: 0 0 45px red, inset 0 0 30px rgba(0,0,0,0.45);
+    box-shadow: 0 0 35px rgba(255,0,0,0.8), inset 0 0 25px rgba(0,0,0,0.45);
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
+/* Animated swoosh */
 @keyframes swooshBall {
     0% { transform: translate(-50%,-50%) scale(0.2); opacity:0.2; filter: blur(20px); }
-    45% { transform: translate(-50%,-42%) scale(1.4); opacity:0.8; }
-    75% { transform: translate(-50%,-50%) scale(0.95); opacity:1; }
-    100% { transform: translate(-50%,-50%) scale(1); opacity:1; }
+    45% { transform: translate(-50%,-42%) scale(1.5); opacity:0.8; }
+    75% { transform: translate(-50%,-50%) scale(0.9); opacity:1; filter: blur(4px); }
+    100% { transform: translate(-50%,-50%) scale(1); opacity:1; filter:none; }
 }
-.swooshActive {
-    animation: swooshBall .95s cubic-bezier(.18,.61,.53,1) forwards;
-}
+.swooshActive { animation: swooshBall .95s cubic-bezier(.18,.61,.53,1) forwards; }
+
 #numberText {
-    font-size: 160px;
+    font-size: 100px;
     font-weight: 900;
     color: #000;
 }
+
+/* ====== COOLDOWN MESSAGE ====== */
+#cooldownWarning {
+    position: fixed;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.55);
+    padding: 16px 28px;
+    border-radius: 15px;
+    font-size: 22px;
+    display: none;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+/* Version badge */
 #versionBadge {
     position: fixed;
     bottom: 10px;
     right: 10px;
     font-size: 13px;
     font-weight: bold;
-    color: #00ff00;
+    color: #ff0000;
+    opacity: 0.9;
 }
-#settingsPanel {
-    display:none;
-    position:fixed;
-    top:80px;
-    left:50%;
-    transform:translateX(-50%);
-    background:#111;
-    padding:20px;
-    border:2px solid red;
-    z-index:9999;
-    color:white;
-}
-input[type=range] { width:100%; }
 </style>
 </head>
 
@@ -94,58 +174,57 @@ input[type=range] { width:100%; }
 
 <h1>🎅 Kerst Muziek Bingo 🎄</h1>
 
-<div id="settingsPanel">
-<h2>Instellingen 🎄</h2>
-<label>Nummer limiet: <span id="rangeValue">75</span></label>
-<input type="range" min="10" max="100" value="75" id="numberRange"><br><br>
+<button id="openSettings">⚙️ Instellingen</button>
 
-<label>Text-To-Speech: <input type="checkbox" id="ttsToggle"></label><br>
-<label>Stem selecteren: <select id="voiceSelect"></select></label>
+<div id="settingsPanel">
+    <h2>Instellingen 🎄</h2>
+    <label>Nummer limiet: <span id="rangeValue" class="sliderValue">75</span></label>
+    <input type="range" min="10" max="100" value="75" id="numberRange">
+    <h3>Gamemode:</h3>
+    <button class="modeBtn" id="kidMode">👶 Kid Mode</button>
+    <button class="modeBtn" id="aiMode">🤖 AI Mode</button>
+    <button class="modeBtn" id="proMode">🔥 Pro Mode</button>
+    <br><br>
+    <label>Text-To-Speech: <input type="checkbox" id="ttsToggle"></label>
+    <label>Stem Selecteren: <select id="voiceSelect"></select></label>
+    <button id="closeSettings">Opslaan & Sluiten</button>
 </div>
 
 <div id="ball"><span id="numberText"></span></div>
-<div id="versionBadge">V2.4</div>
+<div id="cooldownWarning"></div>
+<div id="versionBadge">V2.0</div>
 
 <script>
+/* ----- ORIGINAL SCRIPT (NIETS AANGEPAST) ----- */
 let usedNumbers=[];
 let voices=[];
+let mode = localStorage.getItem("mode")||"pro";
+let ttsEnabled = localStorage.getItem("tts")==="true";
 let maxNumber = Number(localStorage.getItem("max"))||75;
 let cooldownActive=false;
-let ttsEnabled = localStorage.getItem("tts")==="true";
-let mode = localStorage.getItem("mode")||"pro";
+let aiInterval=null;
+let cooldownTime = 0;
 
 const synth = window.speechSynthesis;
-const ball = document.getElementById("ball");
-const numberText = document.getElementById("numberText");
-const settingsPanel = document.getElementById("settingsPanel");
 const ttsToggle = document.getElementById("ttsToggle");
 const voiceSelect = document.getElementById("voiceSelect");
-const numberRange = document.getElementById("numberRange");
 const rangeValue = document.getElementById("rangeValue");
+const ball = document.getElementById("ball");
+const numberText = document.getElementById("numberText");
+const numberRange = document.getElementById("numberRange");
+const settingsPanel = document.getElementById("settingsPanel");
+const openSettings = document.getElementById("openSettings");
+const cooldownWarning = document.getElementById("cooldownWarning");
 
-/* Neon kleuren */
-const neonColors = ["green","red","blue","yellow"];
-let neonIndex = 0;
-function applyNextNeonColor(){
-    const c = neonColors[neonIndex];
-    ball.style.borderColor = c;
-    ball.style.boxShadow = `0 0 50px ${c}, inset 0 0 30px rgba(0,0,0,0.45)`;
-    neonIndex = (neonIndex + 1) % neonColors.length;
-}
-
-/* Range & TTS settings */
 numberRange.value=maxNumber;
 rangeValue.textContent=maxNumber;
 ttsToggle.checked=ttsEnabled;
 
-numberRange.oninput=()=>{ rangeValue.textContent=numberRange.value; maxNumber=Number(numberRange.value); localStorage.setItem("max",maxNumber);}
-ttsToggle.onchange=()=>{ ttsEnabled=ttsToggle.checked; localStorage.setItem("tts",ttsEnabled); }
-
-function loadVoices(){
-    voices = synth.getVoices();
+function loadVoices() {
+    voices=synth.getVoices();
     voiceSelect.innerHTML="";
     voices.forEach((v,i)=>{
-        let opt = document.createElement("option");
+        let opt=document.createElement("option");
         opt.value=i; opt.textContent=v.name;
         voiceSelect.appendChild(opt);
     });
@@ -153,65 +232,94 @@ function loadVoices(){
 }
 loadVoices();
 speechSynthesis.onvoiceschanged=loadVoices;
-voiceSelect.onchange=()=>localStorage.setItem("voiceIndex",voiceSelect.value);
 
-/* Key controls */
-document.body.addEventListener("keydown", e=>{
-    if(e.code==="Space"){
-        e.preventDefault();
-        triggerNext();
-    }
-    if(e.ctrlKey && e.key==="1"){
-        e.preventDefault();
-        settingsPanel.style.display = settingsPanel.style.display==="block"?"none":"block";
-    }
+openSettings.onclick=()=>settingsPanel.style.display="block";
+document.getElementById("closeSettings").onclick=()=>{
+    settingsPanel.style.display="none";
+    localStorage.setItem("tts",ttsToggle.checked);
+    localStorage.setItem("voiceIndex",voiceSelect.value);
+    localStorage.setItem("max",numberRange.value);
+    localStorage.setItem("mode",mode);
+    maxNumber=numberRange.value;
+};
+numberRange.oninput=()=>rangeValue.textContent=numberRange.value;
+document.getElementById("kidMode").onclick=()=>mode="kid";
+document.getElementById("aiMode").onclick=()=>mode="ai";
+document.getElementById("proMode").onclick=()=>mode="pro";
+
+setTimeout(()=>{
+    openSettings.style.display="block";
+    if(mode==="ai") aiInterval=setInterval(generateNumber,10000);
+},1000);
+
+document.body.addEventListener("click", async(e)=>{
+    if(e.target.id!=="openSettings") await triggerNext();
+});
+document.body.addEventListener("keydown", async(e)=>{
+    if(e.code==="Space") { e.preventDefault(); await triggerNext(); }
 });
 
 async function triggerNext(){
-    if(cooldownActive) return;
+    autoRefreshEnabled=false;
+    let kidCooldown = mode==="kid"?15:5;
+    if(cooldownActive){
+        showCooldownWarning();
+        return;
+    }
     cooldownActive=true;
-    ball.style.transform="translate(-50%,-50%) scale(1)";
-    numberText.textContent=""; // leeg maken voor TTS
-    setTimeout(()=>cooldownActive=false,5000);
+    cooldownTime=kidCooldown;
+    updateCooldownInterval();
     await generateNumber();
 }
 
-async function generateNumber(){
-    if(usedNumbers.length>=maxNumber){
-        alert("Alle nummers zijn geweest 🎉");
-        return;
-    }
-
-    let num;
-    do{
-        num=Math.floor(Math.random()*maxNumber)+1;
-    }while(usedNumbers.includes(num));
-
-    usedNumbers.push(num);
-
-    applyNextNeonColor();
-    ball.classList.remove("swooshActive");
-    void ball.offsetHeight;
-    ball.classList.add("swooshActive");
-
-    if(ttsEnabled){
-        const msg = new SpeechSynthesisUtterance(`Volgende nummer. ${num}. Ik herhaal. ${num}.`);
-        msg.voice = voices[voiceSelect.value];
-        numberText.textContent = num; // nummer tonen wanneer TTS start
-        msg.onend = ()=>{ ball.style.transform="translate(-50%,-50%) scale(0)"; };
-        synth.speak(msg);
-        // geluids effect tegelijk
-        const audio=new Audio("./Sounds/Noti.mp3");
-        audio.volume=1.0;
-        audio.play();
-    } else {
-        numberText.textContent = num;
-        const audio=new Audio("./Sounds/Noti.mp3");
-        audio.volume=1.0;
-        audio.onended=()=>{ setTimeout(()=>ball.style.transform="translate(-50%,-50%) scale(0)",8000); };
-        audio.play();
-    }
+function showCooldownWarning(){
+    cooldownWarning.textContent=`U moet nog ${cooldownTime} seconden wachten tot u weer mag drukken.`;
+    cooldownWarning.style.display="block";
+    setTimeout(()=>{ cooldownWarning.style.display="none"; },5000);
 }
+function updateCooldownInterval(){
+    let interval=setInterval(()=>{
+        cooldownTime--;
+        if(cooldownTime<=0){cooldownActive=false; clearInterval(interval);}
+    },1000);
+}
+
+async function generateNumber(){
+    if(usedNumbers.length>=maxNumber){ alert("Alle nummers zijn geweest 🎉"); return; }
+    let num;
+    do{ num=Math.floor(Math.random()*maxNumber)+1; } while(usedNumbers.includes(num));
+    usedNumbers.push(num);
+    numberText.textContent=num;
+    ball.classList.remove("swooshActive");
+    ball.style.transform="translate(-50%,-50%) scale(1)";
+    await playNotification();
+    if(ttsEnabled) speakNumber(num); else setTimeout(hideBall,8000);
+}
+
+function playNotification(){
+    return new Promise(resolve=>{
+        ball.classList.add("swooshActive");
+        numberText.style.opacity="0.1";
+        let audio=new Audio("./Sounds/Noti.mp3");
+        audio.volume=1.0;
+        audio.onended=()=>{
+            numberText.style.opacity="1";
+            resolve();
+        };
+        audio.play();
+    });
+}
+
+function speakNumber(num){
+    ball.classList.remove("swooshActive");
+    numberText.style.opacity="1";
+    const msg=new SpeechSynthesisUtterance(`volgende nummer is ${num}. Ik herhaal ${num}.`);
+    msg.voice=voices[voiceSelect.value];
+    msg.onend=hideBall;
+    synth.speak(msg);
+}
+
+function hideBall(){ ball.style.transform="translate(-50%,-50%) scale(0)"; }
 </script>
 
 </body>
